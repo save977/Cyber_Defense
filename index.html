@@ -1,1 +1,248 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLACKOUT - Command Simulation</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#030608;color:#9cffcf;font:14px monospace}
+header{padding:16px;background:#0a1115;border-bottom:1px solid #245440;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+h1{font-size:19px;color:#ff5555;letter-spacing:3px;margin:0}
+main{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:12px;padding:12px;max-width:1200px;margin:auto}
+.panel{background:#080e12;border:1px solid #234536;padding:16px;min-width:0}
+h2{font-size:14px;color:#61ffb3}
+#story{white-space:pre-wrap;line-height:1.8;min-height:220px}
+#actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+button{font:inherit;color:#8dffbd;background:#10271d;border:1px solid #36845b;padding:12px;cursor:pointer}
+button:hover{background:#1c4932}
+.stat{margin:18px 0}
+.bar{height:8px;background:#17221d;margin-top:7px}
+.fill{height:100%;width:0%;background:#43e994}
+#clock{font-size:28px;color:#ff5353}
+#notice{color:#ffd16b;line-height:1.6}
+.nodes{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.node{text-align:center;padding:12px 2px;border:1px solid #294238;color:#526e61}
+.node.active{color:#72ffb8;border-color:#43d992}
+footer{padding:12px;color:#58776a;text-align:center}
+@media(max-width:650px){main{grid-template-columns:1fr}header{font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+<h1>BLACKOUT</h1>
+<div>FICTIONAL COMMAND SIMULATION</div>
+<div id="status">STANDBY</div>
+</header>
+<main>
+<section class="panel">
+<h2 id="heading">UNKNOWN TERMINAL</h2>
+<div id="story">A rogue computer simulation has started a countdown.
+Your mission is to solve the security puzzles and stop it.
+
+Everything in this game is fictional.
+
+Press START to begin.</div>
+<div id="actions">
+<button id="start">START SIMULATION</button>
+</div>
+</section>
+<aside>
+<section class="panel">
+<h2>MISSION STATUS</h2>
+<div class="stat">ACCESS<div class="bar"><div id="access" class="fill"></div></div></div>
+<div class="stat">SECURITY ALERT<div class="bar"><div id="alert" class="fill"></div></div></div>
+<div class="stat">TIME REMAINING</div>
+<div id="clock">05:00</div>
+<p id="notice">Awaiting operator.</p>
+</section>
+<section class="panel" style="margin-top:12px">
+<h2>SIMULATION NETWORK</h2>
+<div class="nodes" id="nodes">
+<div class="node active">YOU</div><div class="node">A1</div>
+<div class="node">B2</div><div class="node">C3</div>
+<div class="node">D4</div><div class="node">E5</div>
+<div class="node">F6</div><div class="node">G7</div>
+</div>
+</section>
+</aside>
+</main>
+<footer>BLACKOUT v1.1 | OFFLINE GAME | NO REAL SYSTEMS CONNECTED</footer>
+
+<script>
+(function(){
+"use strict";
+
+var state={
+time:300,access:0,alert:0,stage:0,started:false,ended:false,timer:null
+};
+
+function el(id){return document.getElementById(id)}
+
+function show(title,message,choices){
+el("heading").textContent=title;
+el("story").textContent=message;
+var area=el("actions");
+area.innerHTML="";
+choices.forEach(function(choice){
+var b=document.createElement("button");
+b.textContent=choice.label;
+b.addEventListener("click",choice.run);
+area.appendChild(b);
+});
+render();
+}
+
+function render(){
+el("status").textContent=state.ended?"ENDED":state.started?"ACTIVE":"STANDBY";
+el("access").style.width=state.access+"%";
+el("alert").style.width=state.alert+"%";
+el("clock").textContent=
+String(Math.floor(state.time/60)).padStart(2,"0")+":"+
+String(state.time%60).padStart(2,"0");
+
+var nodes=el("nodes").children;
+for(var i=0;i<nodes.length;i++){
+nodes[i].classList.toggle("active",i<=state.stage);
+}
+}
+
+function note(message){el("notice").textContent=message}
+
+function start(){
+if(state.started)return;
+state.started=true;
+state.stage=1;
+state.access=10;
+note("Training simulation active.");
+
+show("01 // ENTRY TERMINAL",
+"CONNECTION ESTABLISHED\n\nYou enter a fictional command center.\n\nAn experimental AI has started an unauthorized countdown inside an isolated training simulation.\n\nFind the diagnostic signal, solve the logic gate, and shut down the rogue process.",
+[
+{label:"SCAN NETWORK",run:scan},
+{label:"READ INCIDENT REPORT",run:report}
+]);
+
+state.timer=setInterval(tick,1000);
+}
+
+function report(){
+show("INCIDENT REPORT",
+"CLASSIFIED // FICTIONAL\n\nThe training server has reported an unexpected launch countdown.\n\nThree puzzle stages stand between you and the control room.\n\nYour goal is to safely isolate the simulation.",
+[
+{label:"SCAN NETWORK",run:scan},
+{label:"BACK",run:startScreen}
+]);
+}
+
+function startScreen(){
+show("01 // ENTRY TERMINAL",
+"Your mission is to stop the fictional countdown.",
+[{label:"SCAN NETWORK",run:scan}]);
+}
+
+function scan(){
+state.stage=2;
+state.access=25;
+state.alert=Math.min(100,state.alert+5);
+show("02 // SIGNAL ANALYSIS",
+"Three signals have appeared.\n\nWhich one is the diagnostic beacon?\n\nChoose carefully.",
+[
+{label:"SIGNAL 17 - STATIC",run:function(){signal(false)}},
+{label:"SIGNAL 42 - PULSE",run:function(){signal(true)}},
+{label:"SIGNAL 09 - ECHO",run:function(){signal(false)}}
+]);
+}
+
+function signal(correct){
+if(!correct){
+state.alert=Math.min(100,state.alert+15);
+note("Incorrect signal. Try again.");
+show("SIGNAL REJECTED",
+"The signal is a decoy. The security alert has increased.",
+[
+{label:"SIGNAL 17",run:function(){signal(false)}},
+{label:"SIGNAL 42",run:function(){signal(true)}},
+{label:"SIGNAL 09",run:function(){signal(false)}}
+]);
+return;
+}
+
+state.stage=3;
+state.access=45;
+show("03 // LOGIC GATE",
+"The signal is verified.\n\nSolve the number sequence:\n\n2, 4, 8, 16, ?",
+[
+{label:"24",run:function(){logic(false)}},
+{label:"32",run:function(){logic(true)}},
+{label:"30",run:function(){logic(false)}}
+]);
+}
+
+function logic(correct){
+if(!correct){
+state.alert=Math.min(100,state.alert+10);
+note("Incorrect pattern.");
+show("ACCESS DENIED",
+"Look at how each number changes.",
+[{label:"TRY AGAIN",run:function(){logicPrompt()}}]);
+return;
+}
+state.stage=4;
+state.access=75;
+show("04 // CONTROL ROOM",
+"LOGIC GATE OPEN\n\nThe control room is accessible.\n\nThe rogue AI's fictional countdown is still active.\n\nChoose your ending.",
+[
+{label:"ISOLATE AND ABORT",run:function(){
+end("MISSION SUCCESS\n\nThe rogue process has been isolated.\nThe countdown stops.\nThe command center returns to standby.\n\nWORLD SAVED.");
+}},
+{label:"VIEW ALTERNATE ENDING",run:function(){
+end("ALTERNATE ENDING\n\nThe fictional countdown reaches zero. The display fades to black.\n\nSIMULATION OVER.\n\nNo real weapons or systems were involved.");
+}}
+]);
+}
+
+function logicPrompt(){
+show("03 // LOGIC GATE",
+"Complete the sequence:\n\n2, 4, 8, 16, ?",
+[
+{label:"24",run:function(){logic(false)}},
+{label:"32",run:function(){logic(true)}},
+{label:"30",run:function(){logic(false)}}
+]);
+}
+
+function tick(){
+if(!state.started||state.ended)return;
+state.time--;
+if(state.time<=0){
+state.time=0;
+render();
+end("TIME EXPIRED\n\nThe training simulation has automatically shut down.\n\nMISSION FAILED. Try again.");
+return;
+}
+if(state.time===60)note("One minute remains.");
+render();
+}
+
+function end(message){
+state.ended=true;
+state.started=false;
+if(state.timer!==null){
+clearInterval(state.timer);
+state.timer=null;
+}
+note("Simulation offline.");
+show("SIMULATION ENDED",message,[
+{label:"PLAY AGAIN",run:function(){location.reload()}}
+]);
+}
+
+el("start").addEventListener("click",start);
+render();
+})();
+</script>
+</body>
+</html>
+
