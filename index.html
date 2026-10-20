@@ -1,21 +1,21 @@
-py this entire code into a file named index.html in your GitHub repository. It's a single file with the game, countdown, security challenges, and animated launch failure sequence.
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BLACKSITE - Stop the Launch</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BLACKSITE — Stop the Launch</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#070c12;color:#dcebf3;font:14px monospace}
 header{padding:18px;background:#09121b;border-bottom:1px solid #29404e;display:flex;justify-content:space-between;flex-wrap:wrap}
 .brand,h2{color:#68ffb1;letter-spacing:2px}
+.brand{font-weight:bold}
+.muted{color:#8ca3b2;font-size:11px}
 main{max-width:1100px;margin:auto;padding:18px;display:grid;grid-template-columns:1.2fr .8fr;gap:15px}
 .panel{background:#101a24;border:1px solid #29404e;border-radius:7px;padding:16px;margin-bottom:14px}
 h2{font-size:13px}
-.muted{color:#8ca3b2;font-size:11px}
-.timer{font-size:clamp(40px,7vw,64px);color:#ffc15c;font-weight:bold}
+.timer{font-size:58px;color:#ffc15c;font-weight:bold}
 .track{height:7px;background:#263642;margin:8px 0 16px}
 .track span{display:block;height:100%;width:100%;background:#ff735c}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -24,17 +24,18 @@ h2{font-size:13px}
 .stat strong{display:block;font-size:19px;margin-top:8px}
 .buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
 button{cursor:pointer;font:inherit;font-size:12px;color:#e4f8ff;background:#142b39;border:1px solid #35566a;border-radius:4px;padding:12px}
-button:hover:not(:disabled){border-color:#68ffb1;background:#1b3948}
+button:hover:not(:disabled){border-color:#68ffb1}
 button:disabled{opacity:.35;cursor:not-allowed}
 .danger{color:#ff9b9b;border-color:#8a3939;background:#2b1418}
 .objective{padding:9px 0;border-bottom:1px solid #20313d;font-size:12px}
-.log{height:185px;overflow:auto;background:#05090d;border:1px solid #20313d;padding:10px;font-size:11px;line-height:1.6}
+.log{height:170px;overflow:auto;background:#05090d;border:1px solid #20313d;padding:10px;font-size:11px;line-height:1.6}
 .log p{margin:0 0 5px}
-.ok{color:#78ffb5}.bad{color:#ff7777}.warn{color:#ffc15c}
+.ok{color:#78ffb5}
+.bad{color:#ff7777}
+.warn{color:#ffc15c}
 .challenge p{line-height:1.7;color:#bfd0da;font-size:12px}
 footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 
-/* FAILURE ANIMATION */
 #fail{display:none;position:fixed;inset:0;z-index:20;background:#030508;color:#ff4040;text-align:center;overflow:hidden}
 #fail.active{display:block;animation:shake .15s infinite}
 .warning{margin-top:3vh;font-size:clamp(24px,5vw,44px);font-weight:900;text-shadow:0 0 20px red;animation:blink .45s infinite alternate}
@@ -48,121 +49,253 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 .bodyRocket{height:70px;background:linear-gradient(90deg,#777,#eee,#777)}
 .flame{width:18px;height:45px;margin:auto;background:linear-gradient(white,#ffb000,#f30,transparent);filter:drop-shadow(0 0 12px #f50);animation:flick .08s infinite alternate}
 .fin{position:absolute;bottom:12px;width:12px;height:25px;background:#b22}
-.left{left:-10px}.right{right:-10px}
+.left{left:-10px}
+.right{right:-10px}
 .glow{position:absolute;bottom:0;left:35%;width:30%;height:45%;background:#ff4d00;filter:blur(50px);opacity:.7}
 .flash{position:absolute;inset:0;background:white;opacity:0;z-index:5;pointer-events:none}
-.cloud{display:none;position:absolute;inset:0;z-index:4;background:radial-gradient(ellipse at 50% 72%,#ffb347,#e65c18 18%,#481b19 40%,#080508);animation:appear 2s forwards}
-.topCloud{position:absolute;top:27%;left:50%;width:150px;height:150px;border-radius:50%;transform:translateX(-50%) scale(0);background:radial-gradient(circle at 35% 30%,#fff1cf,#d99a70 38%,#5b3733 75%);box-shadow:-65px 25px 0 -12px #aa7663,65px 25px 0 -12px #885b50,0 0 70px #ff6a21;animation:expand 2.5s .2s forwards}
-.stem{position:absolute;top:42%;left:50%;width:90px;height:35vh;transform:translateX(-50%) scaleY(0);transform-origin:top;background:linear-gradient(90deg,#49302d,#d49a75,#5b3530);filter:blur(8px);border-radius:45%;animation:stem 2s .4s forwards}
+
+/* REALISTIC-LOOKING FICTIONAL MUSHROOM CLOUD */
+.cloud{
+ display:none;
+ position:absolute;
+ inset:0;
+ z-index:4;
+ overflow:hidden;
+ background:
+  radial-gradient(ellipse at 50% 74%,#8e594155 0%,#211b1c66 35%,#08090dbb 76%);
+ animation:appear 2s forwards;
+ isolation:isolate;
+}
+
+/* Warm haze near the horizon */
+.cloud:before{
+ content:"";
+ position:absolute;
+ left:50%;
+ bottom:2%;
+ width:min(90vw,900px);
+ height:38vh;
+ transform:translateX(-50%);
+ background:radial-gradient(ellipse,#d17b4b55 0%,#8b483a33 34%,transparent 72%);
+ filter:blur(24px);
+ animation:groundGlow 4s ease-in-out infinite alternate;
+}
+
+/* Rising column of turbulent smoke */
+.stem{
+ position:absolute;
+ top:39%;
+ left:50%;
+ width:min(22vw,165px);
+ height:52vh;
+ transform:translateX(-50%) scaleY(0);
+ transform-origin:top;
+ background:
+  radial-gradient(ellipse at 35% 20%,#c1bfb4 0%,#8d8c82 20%,transparent 46%),
+  radial-gradient(ellipse at 67% 46%,#77776e 0%,#41433d 45%,transparent 72%),
+  linear-gradient(90deg,#272923 0%,#74756b 27%,#aaa99d 48%,#62635a 72%,#292b25 100%);
+ filter:blur(9px);
+ border-radius:42% 48% 18% 18%;
+ animation:stem 3s .4s ease-out forwards;
+}
+
+/* Rolling smoke rings around the column */
+.stem:before,.stem:after{
+ content:"";
+ position:absolute;
+ left:-26%;
+ width:150%;
+ height:24%;
+ border-radius:50%;
+ background:
+  radial-gradient(ellipse at 36% 30%,#c0beb3 0%,#8b8a80 31%,#53554c 62%,transparent 80%);
+ filter:blur(6px);
+ animation:smokeRoll 5s ease-in-out infinite alternate;
+}
+.stem:before{top:12%}
+.stem:after{top:40%;left:-10%;width:125%;animation-delay:-2s}
+
+/* Wide, irregular cloud cap */
+.topCloud{
+ position:absolute;
+ top:20%;
+ left:50%;
+ width:min(72vw,560px);
+ height:min(40vh,310px);
+ border-radius:48% 52% 45% 44%;
+ transform:translateX(-50%) scale(0);
+ background:
+  radial-gradient(ellipse at 20% 55%,#b9b7ae 0%,#85857e 17%,transparent 38%),
+  radial-gradient(ellipse at 38% 25%,#d2d0c6 0%,#9c9b91 23%,transparent 43%),
+  radial-gradient(ellipse at 72% 32%,#c6c4ba 0%,#85857d 24%,transparent 46%),
+  radial-gradient(ellipse at 84% 58%,#a5a49a 0%,#696a63 24%,transparent 45%),
+  radial-gradient(ellipse at 52% 74%,#292b29 0%,#565850 34%,transparent 64%),
+  radial-gradient(ellipse at 50% 44%,#aaa99f 0%,#77776f 48%,#3d3f39 78%,#242620 100%);
+ box-shadow:
+  inset -22px -28px 38px #11140f99,
+  inset 10px 8px 25px #e2dfd455,
+  0 0 40px #8d756044;
+ filter:blur(4px);
+ animation:expand 3.5s .2s cubic-bezier(.18,.65,.3,1) forwards,capDrift 7s 3.7s ease-in-out infinite alternate;
+}
+
+/* Extra billowing edges */
+.topCloud:before,.topCloud:after{
+ content:"";
+ position:absolute;
+ border-radius:50%;
+ background:
+  radial-gradient(ellipse at 35% 25%,#d1cfc5 0%,#aaa99f 21%,#77776e 48%,#464740 69%,transparent 81%);
+ filter:blur(4px);
+}
+.topCloud:before{
+ left:-4%;
+ top:24%;
+ width:43%;
+ height:63%;
+ transform:rotate(-14deg);
+ box-shadow:-18px 14px 25px #393a3455;
+}
+.topCloud:after{
+ right:-4%;
+ top:8%;
+ width:45%;
+ height:69%;
+ transform:rotate(13deg);
+ box-shadow:15px 18px 25px #393a3455;
+}
+
 #failFinal{display:none;position:absolute;top:76%;width:100%;z-index:8;color:white;font-size:clamp(20px,4vw,36px);font-weight:bold;text-shadow:0 0 15px red}
 #restartFail{display:none;position:absolute;z-index:9;bottom:4%;left:50%;transform:translateX(-50%);background:#260707;border-color:red;font-weight:bold}
-
-/* VICTORY SCREEN */
 #win{display:none;position:fixed;inset:0;z-index:15;background:#06120c;align-items:center;justify-content:center;text-align:center;padding:22px}
 #win.show{display:flex}
 .winbox{max-width:620px;padding:30px;border:1px solid #327653;background:#0d2117;border-radius:8px}
 .winbox h1{color:#68ffb1;letter-spacing:3px}
+
 @keyframes blink{to{opacity:.35}}
 @keyframes shake{25%{transform:translate(2px,-1px)}50%{transform:translate(-2px,1px)}75%{transform:translate(1px,2px)}}
 @keyframes fly{0%,15%{transform:translateY(0)}100%{transform:translateY(-120vh)}}
 @keyframes flick{to{transform:scaleY(1.5);filter:brightness(1.8)}}
 @keyframes appear{0%{opacity:0}12%,100%{opacity:1}}
-@keyframes expand{to{transform:translateX(-50%) scale(2.2)}}
-@keyframes stem{to{transform:translateX(-50%) scaleY(1)}}
-@media(max-width:740px){main{grid-template-columns:1fr;padding:10px}}
+@keyframes expand{
+ 0%{transform:translateX(-50%) scale(.12);opacity:.1}
+ 20%{opacity:1}
+ 100%{transform:translateX(-50%) scale(1);opacity:1}
+}
+@keyframes stem{
+ 0%{transform:translateX(-50%) scaleY(0);opacity:.3}
+ 100%{transform:translateX(-50%) scaleY(1);opacity:1}
+}
+@keyframes capDrift{
+ from{transform:translateX(-50%) scale(1) rotate(-1deg)}
+ to{transform:translateX(-50%) scale(1.05) rotate(1deg)}
+}
+@keyframes smokeRoll{
+ from{scale:.92;translate:-3px 3px}
+ to{scale:1.08;translate:3px -3px}
+}
+@keyframes groundGlow{from{opacity:.45}to{opacity:1}}
+
+@media(max-width:740px){
+ main{grid-template-columns:1fr;padding:10px}
+}
 </style>
 </head>
 <body>
 <header>
-<div>
-<div class="brand">BLACKSITE // DEFENSE GRID</div>
-<div class="muted">FICTIONAL SECURITY SIMULATION • OFFLINE</div>
-</div>
-<div id="topStatus" style="color:#ffc15c">● DEFENSE SYSTEMS ONLINE</div>
+ <div>
+  <div class="brand">BLACKSITE // DEFENSE GRID</div>
+  <div class="muted">FICTIONAL SECURITY SIMULATION • OFFLINE</div>
+ </div>
+ <div id="topStatus" style="color:#ffc15c">● DEFENSE SYSTEMS ONLINE</div>
 </header>
 
 <main>
-<section class="panel">
-<h2>01 / LAUNCH CONTROL INTERCEPT</h2>
-<div class="muted">TIME TO FICTIONAL LAUNCH</div>
-<div class="timer" id="timer">05:00</div>
-<div class="track"><span id="timebar"></span></div>
+ <section class="panel">
+  <h2>01 / LAUNCH CONTROL INTERCEPT</h2>
+  <div class="muted">TIME TO FICTIONAL LAUNCH</div>
+  <div class="timer" id="timer">05:00</div>
+  <div class="track"><span id="timebar"></span></div>
+  <div class="stats">
+   <div class="stat"><small>THREAT LEVEL</small><strong id="threat" style="color:#ff7777">HIGH</strong></div>
+   <div class="stat"><small>NETWORK INTEGRITY</small><strong id="integrity">42%</strong></div>
+   <div class="stat"><small>AUTH STATUS</small><strong id="auth" style="color:#ffc15c">UNKNOWN</strong></div>
+  </div>
+  <h2>DEFENSE ACTIONS</h2>
+  <div class="buttons">
+   <button onclick="action('scan')">[1] SCAN TELEMETRY</button>
+   <button onclick="action('trace')">[2] TRACE SIGNAL</button>
+   <button onclick="action('isolate')">[3] ISOLATE NETWORK</button>
+   <button onclick="action('verify')">[4] VERIFY AUTHORIZATION</button>
+   <button class="danger" id="abort" onclick="abortLaunch()" disabled>[5] EMERGENCY ABORT</button>
+   <button id="pause" onclick="pauseTimer()">PAUSE TIMER</button>
+  </div>
+  <div class="challenge panel" style="margin:0;background:#0b131a">
+   <h2 id="qtitle">SECURITY CHECKPOINT 1 / 4</h2>
+   <p id="question"></p>
+   <div id="choices"></div>
+  </div>
+ </section>
 
-<div class="stats">
-<div class="stat"><small>THREAT LEVEL</small><strong id="threat" style="color:#ff7777">HIGH</strong></div>
-<div class="stat"><small>NETWORK INTEGRITY</small><strong id="integrity">42%</strong></div>
-<div class="stat"><small>AUTH STATUS</small><strong id="auth" style="color:#ffc15c">UNKNOWN</strong></div>
-</div>
-
-<h2>DEFENSE ACTIONS</h2>
-<div class="buttons">
-<button onclick="action('scan')">[1] SCAN TELEMETRY</button>
-<button onclick="action('trace')">[2] TRACE SIGNAL</button>
-<button onclick="action('isolate')">[3] ISOLATE NETWORK</button>
-<button onclick="action('verify')">[4] VERIFY AUTHORIZATION</button>
-<button class="danger" id="abort" onclick="abortLaunch()" disabled>[5] EMERGENCY ABORT</button>
-<button id="pause" onclick="pauseTimer()">PAUSE TIMER</button>
-</div>
-
-<div class="challenge panel" style="margin:0;background:#0b131a">
-<h2 id="qtitle"></h2>
-<p id="question"></p>
-<div id="choices"></div>
-</div>
-</section>
-
-<aside>
-<div class="panel">
-<h2>02 / MISSION OBJECTIVES</h2>
-<div class="objective" id="o0">○ Scan telemetry for the launch trigger.</div>
-<div class="objective" id="o1">○ Trace the suspicious signal source.</div>
-<div class="objective" id="o2">○ Isolate the compromised network segment.</div>
-<div class="objective" id="o3">○ Verify command authorization.</div>
-<div class="objective" id="o4">○ Execute emergency abort before time expires.</div>
-</div>
-
-<div class="panel">
-<h2>03 / OPERATIONS LOG</h2>
-<div class="log" id="log">
-<p class="ok">[SYSTEM] Secure console initialized.</p>
-<p>[SYSTEM] Training simulation only. No real systems are connected.</p>
-<p class="warn">[ALERT] Unverified launch sequence detected.</p>
-</div>
-</div>
-
-<div class="panel">
-<h2>CONTROL NOTES</h2>
-<div class="muted" style="line-height:1.8">Answer four security checkpoints and complete each defense action. Wrong answers cost time. If time runs out or three checks fail, the animated failure sequence begins.</div>
-</div>
-</aside>
+ <aside>
+  <div class="panel">
+   <h2>02 / MISSION OBJECTIVES</h2>
+   <div class="objective" id="o0">○ Scan telemetry for the launch trigger.</div>
+   <div class="objective" id="o1">○ Trace the suspicious signal source.</div>
+   <div class="objective" id="o2">○ Isolate the compromised network segment.</div>
+   <div class="objective" id="o3">○ Verify command authorization.</div>
+   <div class="objective" id="o4">○ Execute emergency abort before time expires.</div>
+  </div>
+  <div class="panel">
+   <h2>03 / OPERATIONS LOG</h2>
+   <div class="log" id="log">
+    <p class="ok">[SYSTEM] Secure console initialized.</p>
+    <p>[SYSTEM] Training simulation only. No real systems are connected.</p>
+    <p class="warn">[ALERT] Unverified launch sequence detected.</p>
+   </div>
+  </div>
+  <div class="panel">
+   <h2>CONTROL NOTES</h2>
+   <div class="muted" style="line-height:1.8">
+    Answer four security checkpoints and complete each defense action. Wrong answers cost time. If time runs out or three checks fail, the animated failure sequence begins.
+   </div>
+  </div>
+ </aside>
 </main>
 
 <footer>BLACKSITE TRAINING ENVIRONMENT • ALL EVENTS ARE FICTIONAL • NO NETWORK CONNECTION</footer>
 
 <div id="fail">
-<div class="warning">⚠ MISSION FAILURE ⚠</div>
-<div id="failMsg">LAUNCH SEQUENCE INITIATED</div>
-<div id="failNum">5</div>
-<div class="scene">
-<div class="glow"></div>
-<div class="rocket">
-<div class="nose"></div><div class="bodyRocket"></div>
-<div class="fin left"></div><div class="fin right"></div><div class="flame"></div>
-</div>
-<div class="tower"></div><div class="ground"></div>
-</div>
-<div class="flash" id="flash"></div>
-<div class="cloud" id="cloud"><div class="topCloud"></div><div class="stem"></div></div>
-<div id="failFinal">SIMULATION: STRATEGIC DEFENSE FAILED</div>
-<button id="restartFail" onclick="location.reload()">RESTART MISSION</button>
+ <div class="warning">⚠ MISSION FAILURE ⚠</div>
+ <div id="failMsg">LAUNCH SEQUENCE INITIATED</div>
+ <div id="failNum">5</div>
+ <div class="scene">
+  <div class="glow"></div>
+  <div class="rocket">
+   <div class="nose"></div>
+   <div class="bodyRocket"></div>
+   <div class="fin left"></div>
+   <div class="fin right"></div>
+   <div class="flame"></div>
+  </div>
+  <div class="tower"></div>
+  <div class="ground"></div>
+ </div>
+ <div class="flash" id="flash"></div>
+ <div class="cloud" id="cloud">
+  <div class="topCloud"></div>
+  <div class="stem"></div>
+ </div>
+ <div id="failFinal">SIMULATION: STRATEGIC DEFENSE FAILED</div>
+ <button id="restartFail" onclick="location.reload()">RESTART MISSION</button>
 </div>
 
 <div id="win">
-<div class="winbox">
-<h1>LAUNCH ABORTED</h1>
-<p>Emergency shutdown confirmed. The fictional launch sequence has been stopped and the defense network is secure.</p>
-<button onclick="location.reload()">RUN MISSION AGAIN</button>
-</div>
+ <div class="winbox">
+  <h1>LAUNCH ABORTED</h1>
+  <p>Emergency shutdown confirmed. The fictional launch sequence has been stopped and the defense network is secure.</p>
+  <button onclick="location.reload()">RUN MISSION AGAIN</button>
+ </div>
 </div>
 
 <script>
@@ -171,10 +304,10 @@ let time=total,paused=false,ended=false,stage=0,wrong=0;
 const done={scan:false,trace:false,isolate:false,verify:false};
 
 const qs=[
-{title:'SECURITY CHECKPOINT 1 / 4',text:'Incoming command has an invalid signature. What should the operator do?',opts:['Accept it immediately','Quarantine and verify it','Ignore all telemetry'],correct:1},
-{title:'SECURITY CHECKPOINT 2 / 4',text:'Telemetry shows a command from an unknown node. Best next step?',opts:['Trace its source and inspect logs','Forward it to every system','Delete audit logs'],correct:0},
-{title:'SECURITY CHECKPOINT 3 / 4',text:'A network segment is behaving abnormally. What reduces risk?',opts:['Disable all monitoring','Isolate the affected segment','Give it more permissions'],correct:1},
-{title:'SECURITY CHECKPOINT 4 / 4',text:'The abort request is ready, but the operator is unverified. What now?',opts:['Skip verification','Verify through a trusted channel','Reuse unknown credentials'],correct:1}
+ {title:'SECURITY CHECKPOINT 1 / 4',text:'Incoming command has an invalid signature. What should the operator do?',opts:['Accept it immediately','Quarantine and verify it','Ignore all telemetry'],correct:1},
+ {title:'SECURITY CHECKPOINT 2 / 4',text:'Telemetry shows a command from an unknown node. Best next step?',opts:['Trace its source and inspect logs','Forward it to every system','Delete audit logs'],correct:0},
+ {title:'SECURITY CHECKPOINT 3 / 4',text:'A network segment is behaving abnormally. What reduces risk?',opts:['Disable all monitoring','Isolate the affected segment','Give it more permissions'],correct:1},
+ {title:'SECURITY CHECKPOINT 4 / 4',text:'The abort request is ready, but the operator is unverified. What now?',opts:['Skip verification','Verify through a trusted channel','Reuse unknown credentials'],correct:1}
 ];
 
 const $=id=>document.getElementById(id);
@@ -214,10 +347,12 @@ function render(){
   $('choices').innerHTML='';
   return;
  }
+
  let q=qs[stage];
  $('qtitle').textContent=q.title;
  $('question').textContent=q.text;
  $('choices').innerHTML='';
+
  q.opts.forEach((v,i)=>{
   let b=document.createElement('button');
   b.textContent=v;
@@ -229,6 +364,7 @@ function render(){
 
 function answer(i){
  if(ended||paused||stage>=4)return;
+
  if(i!==qs[stage].correct){
   wrong++;
   time=Math.max(0,time-25);
@@ -237,23 +373,29 @@ function answer(i){
   if(wrong>=3)fail('Three failed security checks.');
   return;
  }
+
  let key=['scan','trace','isolate','verify'][stage];
  done[key]=true;
  stage++;
+
  $('o'+(stage-1)).textContent='✓ '+[
- 'Scan telemetry for the launch trigger.',
- 'Trace the suspicious signal source.',
- 'Isolate the compromised network segment.',
- 'Verify command authorization.'
+  'Scan telemetry for the launch trigger.',
+  'Trace the suspicious signal source.',
+  'Isolate the compromised network segment.',
+  'Verify command authorization.'
  ][stage-1];
+
  $('integrity').textContent=(42+stage*14)+'%';
+
  if(key==='scan')$('threat').textContent='IDENTIFIED';
  if(key==='isolate')$('threat').textContent='CONTAINED';
+
  if(key==='verify'){
   $('auth').textContent='VERIFIED';
   $('auth').style.color='#68ffb1';
   $('topStatus').textContent='● AUTHORIZATION VERIFIED';
  }
+
  log('Checkpoint '+stage+' passed.','ok');
  render();
  checkAbort();
@@ -261,15 +403,19 @@ function answer(i){
 
 function action(key){
  if(ended||paused)return;
+
  if(done[key]){
   log(key.toUpperCase()+' already completed.');
   return;
  }
+
  let needed={scan:1,trace:2,isolate:3,verify:4}[key];
+
  if(stage<needed){
   log('Complete the matching checkpoint before this action.','bad');
   return;
  }
+
  done[key]=true;
  log(key.toUpperCase()+' defense action confirmed.','ok');
  checkAbort();
@@ -281,6 +427,7 @@ function checkAbort(){
 
 function abortLaunch(){
  if(ended)return;
+
  if(stage===4&&Object.values(done).every(Boolean)){
   ended=true;
   clearInterval(interval);
@@ -295,6 +442,7 @@ function abortLaunch(){
 
 function fail(reason){
  if(ended)return;
+
  ended=true;
  paused=true;
  clearInterval(interval);
@@ -304,17 +452,24 @@ function fail(reason){
 
  let n=5;
  $('failNum').textContent=n;
+
  let t=setInterval(()=>{
   n--;
   $('failNum').textContent=n;
+
   if(n<=0){
    clearInterval(t);
    $('failNum').textContent='LAUNCH!';
    $('failMsg').textContent='SIMULATED MISSILE AWAY';
+
    setTimeout(()=>{
-    $('flash').animate([{opacity:0},{opacity:1},{opacity:0}],{duration:900});
+    $('flash').animate(
+     [{opacity:0},{opacity:1},{opacity:0}],
+     {duration:900}
+    );
     $('cloud').style.display='block';
    },1800);
+
    setTimeout(()=>{
     $('failFinal').style.display='block';
     $('restartFail').style.display='block';
