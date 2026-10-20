@@ -1,248 +1,335 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BLACKOUT - Command Simulation</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BLACKSITE — Stop the Launch</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#030608;color:#9cffcf;font:14px monospace}
-header{padding:16px;background:#0a1115;border-bottom:1px solid #245440;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
-h1{font-size:19px;color:#ff5555;letter-spacing:3px;margin:0}
-main{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:12px;padding:12px;max-width:1200px;margin:auto}
-.panel{background:#080e12;border:1px solid #234536;padding:16px;min-width:0}
-h2{font-size:14px;color:#61ffb3}
-#story{white-space:pre-wrap;line-height:1.8;min-height:220px}
-#actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-button{font:inherit;color:#8dffbd;background:#10271d;border:1px solid #36845b;padding:12px;cursor:pointer}
-button:hover{background:#1c4932}
-.stat{margin:18px 0}
-.bar{height:8px;background:#17221d;margin-top:7px}
-.fill{height:100%;width:0%;background:#43e994}
-#clock{font-size:28px;color:#ff5353}
-#notice{color:#ffd16b;line-height:1.6}
-.nodes{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
-.node{text-align:center;padding:12px 2px;border:1px solid #294238;color:#526e61}
-.node.active{color:#72ffb8;border-color:#43d992}
-footer{padding:12px;color:#58776a;text-align:center}
-@media(max-width:650px){main{grid-template-columns:1fr}header{font-size:12px}}
+body{margin:0;background:#070c12;color:#dcebf3;font:14px monospace}
+header{padding:18px;background:#09121b;border-bottom:1px solid #29404e;display:flex;justify-content:space-between;flex-wrap:wrap}
+.brand,h2{color:#68ffb1;letter-spacing:2px}
+.brand{font-weight:bold}
+.muted{color:#8ca3b2;font-size:11px}
+main{max-width:1100px;margin:auto;padding:18px;display:grid;grid-template-columns:1.2fr .8fr;gap:15px}
+.panel{background:#101a24;border:1px solid #29404e;border-radius:7px;padding:16px;margin-bottom:14px}
+h2{font-size:13px}
+.timer{font-size:58px;color:#ffc15c;font-weight:bold}
+.track{height:7px;background:#263642;margin:8px 0 16px}
+.track span{display:block;height:100%;width:100%;background:#ff735c}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#09121a;padding:12px;border:1px solid #203441}
+.stat small{display:block;color:#8ca3b2;font-size:10px}
+.stat strong{display:block;font-size:19px;margin-top:8px}
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+button{cursor:pointer;font:inherit;font-size:12px;color:#e4f8ff;background:#142b39;border:1px solid #35566a;border-radius:4px;padding:12px}
+button:hover:not(:disabled){border-color:#68ffb1}
+button:disabled{opacity:.35;cursor:not-allowed}
+.danger{color:#ff9b9b;border-color:#8a3939;background:#2b1418}
+.objective{padding:9px 0;border-bottom:1px solid #20313d;font-size:12px}
+.log{height:170px;overflow:auto;background:#05090d;border:1px solid #20313d;padding:10px;font-size:11px;line-height:1.6}
+.log p{margin:0 0 5px}
+.ok{color:#78ffb5}.bad{color:#ff7777}.warn{color:#ffc15c}
+.challenge p{line-height:1.7;color:#bfd0da;font-size:12px}
+footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
+
+/* FAILURE SEQUENCE */
+#fail{display:none;position:fixed;inset:0;z-index:20;background:#030508;color:#ff4040;text-align:center;overflow:hidden}
+#fail.active{display:block;animation:shake .15s infinite}
+.warning{margin-top:3vh;font-size:clamp(24px,5vw,44px);font-weight:900;text-shadow:0 0 20px red;animation:blink .45s infinite alternate}
+#failMsg{margin:8px;color:#ffc15c;letter-spacing:2px;font-size:12px}
+#failNum{height:1.15em;font-size:clamp(60px,12vw,115px);color:white;font-weight:bold;text-shadow:0 0 28px red}
+.scene{height:43vh;position:relative;overflow:hidden;background:linear-gradient(#080e1b,#29202a 80%,#171717)}
+.ground{position:absolute;bottom:0;height:12%;width:100%;background:#252525}
+.tower{position:absolute;left:calc(50% + 34px);bottom:12%;height:72%;width:14px;background:#555;box-shadow:12px 0 #333}
+.rocket{position:absolute;left:calc(50% - 18px);bottom:12%;width:36px;height:125px;z-index:2;animation:fly 4s ease-in forwards}
+.nose{width:0;height:0;margin:auto;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:35px solid #ddd}
+.bodyRocket{height:70px;background:linear-gradient(90deg,#777,#eee,#777)}
+.flame{width:18px;height:45px;margin:auto;background:linear-gradient(white,#ffb000,#f30,transparent);filter:drop-shadow(0 0 12px #f50);animation:flick .08s infinite alternate}
+.fin{position:absolute;bottom:12px;width:12px;height:25px;background:#b22}
+.left{left:-10px}.right{right:-10px}
+.glow{position:absolute;bottom:0;left:35%;width:30%;height:45%;background:#ff4d00;filter:blur(50px);opacity:.7}
+.flash{position:absolute;inset:0;background:white;opacity:0;z-index:5;pointer-events:none}
+.cloud{display:none;position:absolute;inset:0;z-index:4;background:radial-gradient(ellipse at 50% 72%,#ffb347,#e65c18 18%,#481b19 40%,#080508);animation:appear 2s forwards}
+.topCloud{position:absolute;top:27%;left:50%;width:150px;height:150px;border-radius:50%;transform:translateX(-50%) scale(0);background:radial-gradient(circle at 35% 30%,#fff1cf,#d99a70 38%,#5b3733 75%);box-shadow:-65px 25px 0 -12px #aa7663,65px 25px 0 -12px #885b50,0 0 70px #ff6a21;animation:expand 2.5s .2s forwards}
+.stem{position:absolute;top:42%;left:50%;width:90px;height:35vh;transform:translateX(-50%) scaleY(0);transform-origin:top;background:linear-gradient(90deg,#49302d,#d49a75,#5b3530);filter:blur(8px);border-radius:45%;animation:stem 2s .4s forwards}
+#failFinal{display:none;position:absolute;top:76%;width:100%;z-index:8;color:white;font-size:clamp(20px,4vw,36px);font-weight:bold;text-shadow:0 0 15px red}
+#restartFail{display:none;position:absolute;z-index:9;bottom:4%;left:50%;transform:translateX(-50%);background:#260707;border-color:red;font-weight:bold}
+
+/* VICTORY */
+#win{display:none;position:fixed;inset:0;z-index:15;background:#06120c;align-items:center;justify-content:center;text-align:center;padding:22px}
+#win.show{display:flex}
+.winbox{max-width:620px;padding:30px;border:1px solid #327653;background:#0d2117;border-radius:8px}
+.winbox h1{color:#68ffb1;letter-spacing:3px}
+
+@keyframes blink{to{opacity:.35}}
+@keyframes shake{25%{transform:translate(2px,-1px)}50%{transform:translate(-2px,1px)}75%{transform:translate(1px,2px)}}
+@keyframes fly{0%,15%{transform:translateY(0)}100%{transform:translateY(-120vh)}}
+@keyframes flick{to{transform:scaleY(1.5);filter:brightness(1.8)}}
+@keyframes appear{0%{opacity:0}12%,100%{opacity:1}}
+@keyframes expand{to{transform:translateX(-50%) scale(2.2)}}
+@keyframes stem{to{transform:translateX(-50%) scaleY(1)}}
+@media(max-width:740px){main{grid-template-columns:1fr;padding:10px}}
 </style>
 </head>
 <body>
 <header>
-<h1>BLACKOUT</h1>
-<div>FICTIONAL COMMAND SIMULATION</div>
-<div id="status">STANDBY</div>
+<div>
+<div class="brand">BLACKSITE // DEFENSE GRID</div>
+<div class="muted">FICTIONAL SECURITY SIMULATION • OFFLINE</div>
+</div>
+<div id="topStatus" style="color:#ffc15c">● DEFENSE SYSTEMS ONLINE</div>
 </header>
+
 <main>
 <section class="panel">
-<h2 id="heading">UNKNOWN TERMINAL</h2>
-<div id="story">A rogue computer simulation has started a countdown.
-Your mission is to solve the security puzzles and stop it.
+<h2>01 / LAUNCH CONTROL INTERCEPT</h2>
+<div class="muted">TIME TO FICTIONAL LAUNCH</div>
+<div class="timer" id="timer">05:00</div>
+<div class="track"><span id="timebar"></span></div>
 
-Everything in this game is fictional.
+<div class="stats">
+<div class="stat"><small>THREAT LEVEL</small><strong id="threat" style="color:#ff7777">HIGH</strong></div>
+<div class="stat"><small>NETWORK INTEGRITY</small><strong id="integrity">42%</strong></div>
+<div class="stat"><small>AUTH STATUS</small><strong id="auth" style="color:#ffc15c">UNKNOWN</strong></div>
+</div>
 
-Press START to begin.</div>
-<div id="actions">
-<button id="start">START SIMULATION</button>
+<h2>DEFENSE ACTIONS</h2>
+<div class="buttons">
+<button onclick="action('scan')">[1] SCAN TELEMETRY</button>
+<button onclick="action('trace')">[2] TRACE SIGNAL</button>
+<button onclick="action('isolate')">[3] ISOLATE NETWORK</button>
+<button onclick="action('verify')">[4] VERIFY AUTHORIZATION</button>
+<button class="danger" id="abort" onclick="abortLaunch()" disabled>[5] EMERGENCY ABORT</button>
+<button id="pause" onclick="pauseTimer()">PAUSE TIMER</button>
+</div>
+
+<div class="challenge panel" style="margin:0;background:#0b131a">
+<h2 id="qtitle">SECURITY CHECKPOINT 1 / 4</h2>
+<p id="question"></p>
+<div id="choices"></div>
 </div>
 </section>
+
 <aside>
-<section class="panel">
-<h2>MISSION STATUS</h2>
-<div class="stat">ACCESS<div class="bar"><div id="access" class="fill"></div></div></div>
-<div class="stat">SECURITY ALERT<div class="bar"><div id="alert" class="fill"></div></div></div>
-<div class="stat">TIME REMAINING</div>
-<div id="clock">05:00</div>
-<p id="notice">Awaiting operator.</p>
-</section>
-<section class="panel" style="margin-top:12px">
-<h2>SIMULATION NETWORK</h2>
-<div class="nodes" id="nodes">
-<div class="node active">YOU</div><div class="node">A1</div>
-<div class="node">B2</div><div class="node">C3</div>
-<div class="node">D4</div><div class="node">E5</div>
-<div class="node">F6</div><div class="node">G7</div>
+<div class="panel">
+<h2>02 / MISSION OBJECTIVES</h2>
+<div class="objective" id="o0">○ Scan telemetry for the launch trigger.</div>
+<div class="objective" id="o1">○ Trace the suspicious signal source.</div>
+<div class="objective" id="o2">○ Isolate the compromised network segment.</div>
+<div class="objective" id="o3">○ Verify command authorization.</div>
+<div class="objective" id="o4">○ Execute emergency abort before time expires.</div>
 </div>
-</section>
+
+<div class="panel">
+<h2>03 / OPERATIONS LOG</h2>
+<div class="log" id="log">
+<p class="ok">[SYSTEM] Secure console initialized.</p>
+<p>[SYSTEM] Training simulation only. No real systems are connected.</p>
+<p class="warn">[ALERT] Unverified launch sequence detected.</p>
+</div>
+</div>
+
+<div class="panel">
+<h2>CONTROL NOTES</h2>
+<div class="muted" style="line-height:1.8">Answer four security checkpoints and complete each defense action. Wrong answers cost time. If time runs out or three checks fail, the animated failure sequence begins.</div>
+</div>
 </aside>
 </main>
-<footer>BLACKOUT v1.1 | OFFLINE GAME | NO REAL SYSTEMS CONNECTED</footer>
+
+<footer>BLACKSITE TRAINING ENVIRONMENT • ALL EVENTS ARE FICTIONAL • NO NETWORK CONNECTION</footer>
+
+<div id="fail">
+<div class="warning">⚠ MISSION FAILURE ⚠</div>
+<div id="failMsg">LAUNCH SEQUENCE INITIATED</div>
+<div id="failNum">5</div>
+<div class="scene">
+<div class="glow"></div>
+<div class="rocket">
+<div class="nose"></div><div class="bodyRocket"></div>
+<div class="fin left"></div><div class="fin right"></div><div class="flame"></div>
+</div>
+<div class="tower"></div><div class="ground"></div>
+</div>
+<div class="flash" id="flash"></div>
+<div class="cloud" id="cloud"><div class="topCloud"></div><div class="stem"></div></div>
+<div id="failFinal">SIMULATION: STRATEGIC DEFENSE FAILED</div>
+<button id="restartFail" onclick="location.reload()">RESTART MISSION</button>
+</div>
+
+<div id="win">
+<div class="winbox">
+<h1>LAUNCH ABORTED</h1>
+<p>Emergency shutdown confirmed. The fictional launch sequence has been stopped and the defense network is secure.</p>
+<button onclick="location.reload()">RUN MISSION AGAIN</button>
+</div>
+</div>
 
 <script>
-(function(){
-"use strict";
+const total=300;
+let time=total,paused=false,ended=false,stage=0,wrong=0;
+const done={scan:false,trace:false,isolate:false,verify:false};
 
-var state={
-time:300,access:0,alert:0,stage:0,started:false,ended:false,timer:null
-};
+const qs=[
+{title:'SECURITY CHECKPOINT 1 / 4',text:'Incoming command has an invalid signature. What should the operator do?',opts:['Accept it immediately','Quarantine and verify it','Ignore all telemetry'],correct:1},
+{title:'SECURITY CHECKPOINT 2 / 4',text:'Telemetry shows a command from an unknown node. Best next step?',opts:['Trace its source and inspect logs','Forward it to every system','Delete audit logs'],correct:0},
+{title:'SECURITY CHECKPOINT 3 / 4',text:'A network segment is behaving abnormally. What reduces risk?',opts:['Disable all monitoring','Isolate the affected segment','Give it more permissions'],correct:1},
+{title:'SECURITY CHECKPOINT 4 / 4',text:'The abort request is ready, but the operator is unverified. What now?',opts:['Skip verification','Verify through a trusted channel','Reuse unknown credentials'],correct:1}
+];
 
-function el(id){return document.getElementById(id)}
+const $=id=>document.getElementById(id);
 
-function show(title,message,choices){
-el("heading").textContent=title;
-el("story").textContent=message;
-var area=el("actions");
-area.innerHTML="";
-choices.forEach(function(choice){
-var b=document.createElement("button");
-b.textContent=choice.label;
-b.addEventListener("click",choice.run);
-area.appendChild(b);
-});
-render();
+function log(s,c=''){
+ let p=document.createElement('p');
+ p.className=c;
+ p.textContent='['+new Date().toLocaleTimeString()+'] '+s;
+ $('log').prepend(p);
 }
 
-function render(){
-el("status").textContent=state.ended?"ENDED":state.started?"ACTIVE":"STANDBY";
-el("access").style.width=state.access+"%";
-el("alert").style.width=state.alert+"%";
-el("clock").textContent=
-String(Math.floor(state.time/60)).padStart(2,"0")+":"+
-String(state.time%60).padStart(2,"0");
-
-var nodes=el("nodes").children;
-for(var i=0;i<nodes.length;i++){
-nodes[i].classList.toggle("active",i<=state.stage);
-}
-}
-
-function note(message){el("notice").textContent=message}
-
-function start(){
-if(state.started)return;
-state.started=true;
-state.stage=1;
-state.access=10;
-note("Training simulation active.");
-
-show("01 // ENTRY TERMINAL",
-"CONNECTION ESTABLISHED\n\nYou enter a fictional command center.\n\nAn experimental AI has started an unauthorized countdown inside an isolated training simulation.\n\nFind the diagnostic signal, solve the logic gate, and shut down the rogue process.",
-[
-{label:"SCAN NETWORK",run:scan},
-{label:"READ INCIDENT REPORT",run:report}
-]);
-
-state.timer=setInterval(tick,1000);
-}
-
-function report(){
-show("INCIDENT REPORT",
-"CLASSIFIED // FICTIONAL\n\nThe training server has reported an unexpected launch countdown.\n\nThree puzzle stages stand between you and the control room.\n\nYour goal is to safely isolate the simulation.",
-[
-{label:"SCAN NETWORK",run:scan},
-{label:"BACK",run:startScreen}
-]);
-}
-
-function startScreen(){
-show("01 // ENTRY TERMINAL",
-"Your mission is to stop the fictional countdown.",
-[{label:"SCAN NETWORK",run:scan}]);
-}
-
-function scan(){
-state.stage=2;
-state.access=25;
-state.alert=Math.min(100,state.alert+5);
-show("02 // SIGNAL ANALYSIS",
-"Three signals have appeared.\n\nWhich one is the diagnostic beacon?\n\nChoose carefully.",
-[
-{label:"SIGNAL 17 - STATIC",run:function(){signal(false)}},
-{label:"SIGNAL 42 - PULSE",run:function(){signal(true)}},
-{label:"SIGNAL 09 - ECHO",run:function(){signal(false)}}
-]);
-}
-
-function signal(correct){
-if(!correct){
-state.alert=Math.min(100,state.alert+15);
-note("Incorrect signal. Try again.");
-show("SIGNAL REJECTED",
-"The signal is a decoy. The security alert has increased.",
-[
-{label:"SIGNAL 17",run:function(){signal(false)}},
-{label:"SIGNAL 42",run:function(){signal(true)}},
-{label:"SIGNAL 09",run:function(){signal(false)}}
-]);
-return;
-}
-
-state.stage=3;
-state.access=45;
-show("03 // LOGIC GATE",
-"The signal is verified.\n\nSolve the number sequence:\n\n2, 4, 8, 16, ?",
-[
-{label:"24",run:function(){logic(false)}},
-{label:"32",run:function(){logic(true)}},
-{label:"30",run:function(){logic(false)}}
-]);
-}
-
-function logic(correct){
-if(!correct){
-state.alert=Math.min(100,state.alert+10);
-note("Incorrect pattern.");
-show("ACCESS DENIED",
-"Look at how each number changes.",
-[{label:"TRY AGAIN",run:function(){logicPrompt()}}]);
-return;
-}
-state.stage=4;
-state.access=75;
-show("04 // CONTROL ROOM",
-"LOGIC GATE OPEN\n\nThe control room is accessible.\n\nThe rogue AI's fictional countdown is still active.\n\nChoose your ending.",
-[
-{label:"ISOLATE AND ABORT",run:function(){
-end("MISSION SUCCESS\n\nThe rogue process has been isolated.\nThe countdown stops.\nThe command center returns to standby.\n\nWORLD SAVED.");
-}},
-{label:"VIEW ALTERNATE ENDING",run:function(){
-end("ALTERNATE ENDING\n\nThe fictional countdown reaches zero. The display fades to black.\n\nSIMULATION OVER.\n\nNo real weapons or systems were involved.");
-}}
-]);
-}
-
-function logicPrompt(){
-show("03 // LOGIC GATE",
-"Complete the sequence:\n\n2, 4, 8, 16, ?",
-[
-{label:"24",run:function(){logic(false)}},
-{label:"32",run:function(){logic(true)}},
-{label:"30",run:function(){logic(false)}}
-]);
+function drawTimer(){
+ $('timer').textContent=String(Math.floor(time/60)).padStart(2,'0')+':'+String(time%60).padStart(2,'0');
+ $('timebar').style.width=(100*time/total)+'%';
 }
 
 function tick(){
-if(!state.started||state.ended)return;
-state.time--;
-if(state.time<=0){
-state.time=0;
-render();
-end("TIME EXPIRED\n\nThe training simulation has automatically shut down.\n\nMISSION FAILED. Try again.");
-return;
-}
-if(state.time===60)note("One minute remains.");
-render();
+ if(ended||paused)return;
+ time--;
+ drawTimer();
+ if(time<=0)fail('Countdown expired.');
 }
 
-function end(message){
-state.ended=true;
-state.started=false;
-if(state.timer!==null){
-clearInterval(state.timer);
-state.timer=null;
-}
-note("Simulation offline.");
-show("SIMULATION ENDED",message,[
-{label:"PLAY AGAIN",run:function(){location.reload()}}
-]);
+let interval=setInterval(tick,1000);
+
+function pauseTimer(){
+ if(ended)return;
+ paused=!paused;
+ $('pause').textContent=paused?'RESUME TIMER':'PAUSE TIMER';
+ log(paused?'Timer paused.':'Timer resumed.','warn');
 }
 
-el("start").addEventListener("click",start);
+function render(){
+ if(stage>=4){
+  $('qtitle').textContent='CHECKPOINTS COMPLETE';
+  $('question').textContent='All security checks passed. Use EMERGENCY ABORT to stop the fictional launch.';
+  $('choices').innerHTML='';
+  return;
+ }
+ let q=qs[stage];
+ $('qtitle').textContent=q.title;
+ $('question').textContent=q.text;
+ $('choices').innerHTML='';
+ q.opts.forEach((v,i)=>{
+  let b=document.createElement('button');
+  b.textContent=v;
+  b.style.margin='4px';
+  b.onclick=()=>answer(i);
+  $('choices').appendChild(b);
+ });
+}
+
+function answer(i){
+ if(ended||paused||stage>=4)return;
+ if(i!==qs[stage].correct){
+  wrong++;
+  time=Math.max(0,time-25);
+  drawTimer();
+  log('Incorrect response. 25 seconds lost.','bad');
+  if(wrong>=3)fail('Three failed security checks.');
+  return;
+ }
+ let key=['scan','trace','isolate','verify'][stage];
+ done[key]=true;
+ stage++;
+ $('o'+(stage-1)).textContent='✓ '+[
+ 'Scan telemetry for the launch trigger.',
+ 'Trace the suspicious signal source.',
+ 'Isolate the compromised network segment.',
+ 'Verify command authorization.'
+ ][stage-1];
+ $('integrity').textContent=(42+stage*14)+'%';
+ if(key==='scan')$('threat').textContent='IDENTIFIED';
+ if(key==='isolate')$('threat').textContent='CONTAINED';
+ if(key==='verify'){
+  $('auth').textContent='VERIFIED';
+  $('auth').style.color='#68ffb1';
+  $('topStatus').textContent='● AUTHORIZATION VERIFIED';
+ }
+ log('Checkpoint '+stage+' passed.','ok');
+ render();
+ checkAbort();
+}
+
+function action(key){
+ if(ended||paused)return;
+ if(done[key]){
+  log(key.toUpperCase()+' already completed.');
+  return;
+ }
+ let needed={scan:1,trace:2,isolate:3,verify:4}[key];
+ if(stage<needed){
+  log('Complete the matching checkpoint before this action.','bad');
+  return;
+ }
+ done[key]=true;
+ log(key.toUpperCase()+' defense action confirmed.','ok');
+ checkAbort();
+}
+
+function checkAbort(){
+ $('abort').disabled=!(stage===4&&Object.values(done).every(Boolean));
+}
+
+function abortLaunch(){
+ if(ended)return;
+ if(stage===4&&Object.values(done).every(Boolean)){
+  ended=true;
+  clearInterval(interval);
+  $('win').classList.add('show');
+  $('topStatus').textContent='● LAUNCH SEQUENCE ABORTED';
+  $('o4').textContent='✓ Emergency abort executed.';
+  log('Emergency abort confirmed. Mission successful.','ok');
+ }else{
+  log('Abort denied: complete every checkpoint and defense action.','bad');
+ }
+}
+
+function fail(reason){
+ if(ended)return;
+ ended=true;
+ paused=true;
+ clearInterval(interval);
+ log('MISSION FAILURE: '+reason,'bad');
+ $('topStatus').textContent='● DEFENSE FAILURE';
+ $('fail').classList.add('active');
+
+ let n=5;
+ $('failNum').textContent=n;
+ let t=setInterval(()=>{
+  n--;
+  $('failNum').textContent=n;
+  if(n<=0){
+   clearInterval(t);
+   $('failNum').textContent='LAUNCH!';
+   $('failMsg').textContent='SIMULATED MISSILE AWAY';
+   setTimeout(()=>{
+    $('flash').animate(
+     [{opacity:0},{opacity:1},{opacity:0}],
+     {duration:900}
+    );
+    $('cloud').style.display='block';
+   },1800);
+   setTimeout(()=>{
+    $('failFinal').style.display='block';
+    $('restartFail').style.display='block';
+    $('failMsg').textContent='SIMULATION TERMINATED';
+   },4000);
+  }
+ },1000);
+}
+
 render();
-})();
+drawTimer();
 </script>
 </body>
 </html>
-
