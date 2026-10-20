@@ -1,21 +1,21 @@
+py this entire code into a file named index.html in your GitHub repository. It's a single file with the game, countdown, security challenges, and animated launch failure sequence.
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BLACKSITE — Stop the Launch</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLACKSITE - Stop the Launch</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#070c12;color:#dcebf3;font:14px monospace}
 header{padding:18px;background:#09121b;border-bottom:1px solid #29404e;display:flex;justify-content:space-between;flex-wrap:wrap}
 .brand,h2{color:#68ffb1;letter-spacing:2px}
-.brand{font-weight:bold}
-.muted{color:#8ca3b2;font-size:11px}
 main{max-width:1100px;margin:auto;padding:18px;display:grid;grid-template-columns:1.2fr .8fr;gap:15px}
 .panel{background:#101a24;border:1px solid #29404e;border-radius:7px;padding:16px;margin-bottom:14px}
 h2{font-size:13px}
-.timer{font-size:58px;color:#ffc15c;font-weight:bold}
+.muted{color:#8ca3b2;font-size:11px}
+.timer{font-size:clamp(40px,7vw,64px);color:#ffc15c;font-weight:bold}
 .track{height:7px;background:#263642;margin:8px 0 16px}
 .track span{display:block;height:100%;width:100%;background:#ff735c}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -24,17 +24,17 @@ h2{font-size:13px}
 .stat strong{display:block;font-size:19px;margin-top:8px}
 .buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
 button{cursor:pointer;font:inherit;font-size:12px;color:#e4f8ff;background:#142b39;border:1px solid #35566a;border-radius:4px;padding:12px}
-button:hover:not(:disabled){border-color:#68ffb1}
+button:hover:not(:disabled){border-color:#68ffb1;background:#1b3948}
 button:disabled{opacity:.35;cursor:not-allowed}
 .danger{color:#ff9b9b;border-color:#8a3939;background:#2b1418}
 .objective{padding:9px 0;border-bottom:1px solid #20313d;font-size:12px}
-.log{height:170px;overflow:auto;background:#05090d;border:1px solid #20313d;padding:10px;font-size:11px;line-height:1.6}
+.log{height:185px;overflow:auto;background:#05090d;border:1px solid #20313d;padding:10px;font-size:11px;line-height:1.6}
 .log p{margin:0 0 5px}
 .ok{color:#78ffb5}.bad{color:#ff7777}.warn{color:#ffc15c}
 .challenge p{line-height:1.7;color:#bfd0da;font-size:12px}
 footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 
-/* FAILURE SEQUENCE */
+/* FAILURE ANIMATION */
 #fail{display:none;position:fixed;inset:0;z-index:20;background:#030508;color:#ff4040;text-align:center;overflow:hidden}
 #fail.active{display:block;animation:shake .15s infinite}
 .warning{margin-top:3vh;font-size:clamp(24px,5vw,44px);font-weight:900;text-shadow:0 0 20px red;animation:blink .45s infinite alternate}
@@ -57,12 +57,11 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 #failFinal{display:none;position:absolute;top:76%;width:100%;z-index:8;color:white;font-size:clamp(20px,4vw,36px);font-weight:bold;text-shadow:0 0 15px red}
 #restartFail{display:none;position:absolute;z-index:9;bottom:4%;left:50%;transform:translateX(-50%);background:#260707;border-color:red;font-weight:bold}
 
-/* VICTORY */
+/* VICTORY SCREEN */
 #win{display:none;position:fixed;inset:0;z-index:15;background:#06120c;align-items:center;justify-content:center;text-align:center;padding:22px}
 #win.show{display:flex}
 .winbox{max-width:620px;padding:30px;border:1px solid #327653;background:#0d2117;border-radius:8px}
 .winbox h1{color:#68ffb1;letter-spacing:3px}
-
 @keyframes blink{to{opacity:.35}}
 @keyframes shake{25%{transform:translate(2px,-1px)}50%{transform:translate(-2px,1px)}75%{transform:translate(1px,2px)}}
 @keyframes fly{0%,15%{transform:translateY(0)}100%{transform:translateY(-120vh)}}
@@ -106,7 +105,7 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 </div>
 
 <div class="challenge panel" style="margin:0;background:#0b131a">
-<h2 id="qtitle">SECURITY CHECKPOINT 1 / 4</h2>
+<h2 id="qtitle"></h2>
 <p id="question"></p>
 <div id="choices"></div>
 </div>
@@ -313,10 +312,7 @@ function fail(reason){
    $('failNum').textContent='LAUNCH!';
    $('failMsg').textContent='SIMULATED MISSILE AWAY';
    setTimeout(()=>{
-    $('flash').animate(
-     [{opacity:0},{opacity:1},{opacity:0}],
-     {duration:900}
-    );
+    $('flash').animate([{opacity:0},{opacity:1},{opacity:0}],{duration:900});
     $('cloud').style.display='block';
    },1800);
    setTimeout(()=>{
