@@ -30,9 +30,7 @@ button:disabled{opacity:.35;cursor:not-allowed}
 .objective{padding:9px 0;border-bottom:1px solid #20313d;font-size:12px}
 .log{height:170px;overflow:auto;background:#05090d;border:1px solid #20313d;padding:10px;font-size:11px;line-height:1.6}
 .log p{margin:0 0 5px}
-.ok{color:#78ffb5}
-.bad{color:#ff7777}
-.warn{color:#ffc15c}
+.ok{color:#78ffb5}.bad{color:#ff7777}.warn{color:#ffc15c}
 .challenge p{line-height:1.7;color:#bfd0da;font-size:12px}
 footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 #fail{display:none;position:fixed;inset:0;z-index:20;background:#030508;color:#ff4040;text-align:center;overflow:hidden}
@@ -59,8 +57,7 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 .topCloud:after{right:-4%;top:8%;width:45%;height:69%;transform:rotate(13deg);box-shadow:15px 18px 25px #393a3455}
 .stem{position:absolute;top:39%;left:50%;width:min(22vw,165px);height:52vh;transform:translateX(-50%) scaleY(0);transform-origin:top;background:radial-gradient(ellipse at 35% 20%,#c1bfb4 0%,#8d8c82 20%,transparent 46%),radial-gradient(ellipse at 67% 46%,#77776e 0%,#41433d 45%,transparent 72%),linear-gradient(90deg,#272923 0%,#74756b 27%,#aaa99d 48%,#62635a 72%,#292b25 100%);filter:blur(9px);border-radius:42% 48% 18% 18%;animation:stem 3s .4s ease-out forwards}
 .stem:before,.stem:after{content:"";position:absolute;left:-26%;width:150%;height:24%;border-radius:50%;background:radial-gradient(ellipse at 36% 30%,#c0beb3 0%,#8b8a80 31%,#53554c 62%,transparent 80%);filter:blur(6px);animation:smokeRoll 5s ease-in-out infinite alternate}
-.stem:before{top:12%}
-.stem:after{top:40%;left:-10%;width:125%;animation-delay:-2s}
+.stem:before{top:12%}.stem:after{top:40%;left:-10%;width:125%;animation-delay:-2s}
 #failFinal{display:none;position:absolute;top:76%;width:100%;z-index:8;color:white;font-size:clamp(20px,4vw,36px);font-weight:bold;text-shadow:0 0 15px red}
 #restartFail{display:none;position:absolute;z-index:9;bottom:4%;left:50%;transform:translateX(-50%);background:#260707;border-color:red;font-weight:bold}
 #win{display:none;position:fixed;inset:0;z-index:15;background:#06120c;align-items:center;justify-content:center;text-align:center;padding:22px}
@@ -88,7 +85,7 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
     <div class="brand">BLACKSITE // DEFENSE GRID</div>
     <div class="muted">FICTIONAL SECURITY SIMULATION • OFFLINE</div>
   </div>
-  <div id="topStatus" style="color:#ffc15c">● DEFENSE SYSTEMS ONLINE</div>
+  <div id="topStatus" style="color:#ffc15c">● MISSION ACTIVE</div>
 </header>
 
 <main>
@@ -109,7 +106,6 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
   <div class="stat"><small>HINTS</small><strong>−100 PTS</strong></div>
 </div>
 
-<button id="startMission" onclick="startMission()" style="width:100%;margin:0 0 12px">▶ START MISSION</button>
 <h2>DEFENSE ACTIONS</h2>
 <div class="buttons">
   <button onclick="action('scan')">[1] SCAN TELEMETRY</button>
@@ -150,7 +146,7 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 
 <div class="panel">
 <h2>CONTROL NOTES</h2>
-<div class="muted" style="line-height:1.8">Solve ten security puzzles and complete each defense action. Wrong answers cost time. If time runs out or four attempts fail, the animated failure sequence begins.</div>
+<div class="muted" style="line-height:1.8">The mission starts immediately. Solve ten security puzzles and complete each defense action. Wrong answers cost time. If time runs out or four attempts fail, the animated failure sequence begins.</div>
 </div>
 </aside>
 </main>
@@ -164,14 +160,11 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
   <div class="scene">
     <div class="glow"></div>
     <div class="rocket">
-      <div class="nose"></div>
-      <div class="bodyRocket"></div>
-      <div class="fin left"></div>
-      <div class="fin right"></div>
+      <div class="nose"></div><div class="bodyRocket"></div>
+      <div class="fin left"></div><div class="fin right"></div>
       <div class="flame"></div>
     </div>
-    <div class="tower"></div>
-    <div class="ground"></div>
+    <div class="tower"></div><div class="ground"></div>
   </div>
   <div class="flash" id="flash"></div>
   <div class="cloud" id="cloud"><div class="topCloud"></div><div class="stem"></div></div>
@@ -189,7 +182,7 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 
 <script>
 const total=60;
-let time=total,paused=false,ended=false,stage=0,wrong=0,score=0,combo=0,gameStarted=false;
+let time=total,paused=false,ended=false,stage=0,wrong=0,score=0,combo=0;
 const done={scan:false,trace:false,isolate:false,verify:false};
 const $=id=>document.getElementById(id);
 
@@ -219,23 +212,14 @@ function drawTimer(){
 }
 
 function tick(){
-  if(!gameStarted||ended||paused)return;
+  if(ended||paused)return;
   time--;
   drawTimer();
   if(time<=0)fail('Countdown expired.');
 }
-const interval=setInterval(tick,1000);
-
-function startMission(){
-  if(ended||gameStarted)return;
-  gameStarted=true;
-  $('startMission').disabled=true;
-  $('topStatus').textContent='● MISSION ACTIVE';
-  log('Mission started. Ten checkpoints available.','ok');
-}
 
 function pauseTimer(){
-  if(ended||!gameStarted)return;
+  if(ended)return;
   paused=!paused;
   $('pause').textContent=paused?'RESUME TIMER':'PAUSE TIMER';
   log(paused?'Timer paused.':'Timer resumed.','warn');
@@ -265,7 +249,7 @@ function render(){
 }
 
 function answer(i){
-  if(ended||paused||!gameStarted||stage>=qs.length)return;
+  if(ended||paused||stage>=qs.length)return;
   if(i!==qs[stage].correct){
     wrong++;
     combo=0;
@@ -309,7 +293,7 @@ function answer(i){
 }
 
 function showHint(){
-  if(ended||paused||!gameStarted||stage>=qs.length)return;
+  if(ended||paused||stage>=qs.length)return;
   const hints=[
     'Never trust an unsigned command; isolate it and verify its origin.',
     'Follow the signal source and check the event logs.',
@@ -329,7 +313,7 @@ function showHint(){
 }
 
 function action(key){
-  if(ended||paused||!gameStarted)return;
+  if(ended||paused)return;
   if(done[key]){
     log(key.toUpperCase()+' already completed.','warn');
     return;
@@ -363,7 +347,7 @@ function checkAbort(){
 }
 
 function abortLaunch(){
-  if(ended||!gameStarted)return;
+  if(ended)return;
   if(stage===qs.length&&Object.values(done).every(Boolean)){
     ended=true;
     clearInterval(interval);
@@ -410,6 +394,8 @@ function fail(reason){
 render();
 drawTimer();
 $('abort').disabled=true;
+log('Mission started automatically. 60 seconds remaining.','warn');
+const interval=setInterval(tick,1000);
 </script>
 </body>
 </html>
