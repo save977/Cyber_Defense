@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BLACKSITE — Nuclear Defense</title>
+<title>BLACKSITE — Nuclear Launch</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#070c12;color:#dcebf3;font:14px monospace}
@@ -33,12 +33,12 @@ button:disabled{opacity:.35;cursor:not-allowed}
 .ok{color:#78ffb5}.bad{color:#ff7777}.warn{color:#ffc15c}
 .challenge p{line-height:1.7;color:#bfd0da;font-size:12px}
 footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
-#fail{display:none;position:fixed;inset:0;z-index:20;background:#030508;color:#ff4040;text-align:center;overflow:auto;padding:7vh 18px;background:radial-gradient(circle at center,#241020 0%,#07070d 72%)}
+#fail{display:none;position:fixed;inset:0;z-index:20;background:#030508;color:#ff4040;text-align:center;overflow:hidden}
 #fail.active{display:block;animation:shake .15s infinite}
 .warning{margin-top:3vh;font-size:clamp(24px,5vw,44px);font-weight:900;text-shadow:0 0 20px red;animation:blink .45s infinite alternate}
 #failMsg{margin:8px;color:#ffc15c;letter-spacing:2px;font-size:12px}
-#failNum{height:1.15em;font-size:clamp(60px,12vw,115px);color:#ff5c9d;font-weight:bold;text-shadow:0 0 24px #ff2f8a}
-.scene{height:43vh;min-height:230px;position:relative;overflow:hidden;background:linear-gradient(#080e1b,#29202a 80%,#171717)}
+#failNum{height:1.15em;font-size:clamp(60px,12vw,115px);color:white;font-weight:bold;text-shadow:0 0 28px red}
+.scene{height:43vh;position:relative;overflow:hidden;background:linear-gradient(#080e1b,#29202a 80%,#171717)}
 .ground{position:absolute;bottom:0;height:12%;width:100%;background:#252525}
 .tower{position:absolute;left:calc(50% + 34px);bottom:12%;height:72%;width:14px;background:#555;box-shadow:12px 0 #333}
 .rocket{position:absolute;left:calc(50% - 18px);bottom:12%;width:36px;height:125px;z-index:2;animation:fly 4s ease-in forwards}
@@ -48,23 +48,26 @@ footer{text-align:center;color:#526b79;font-size:10px;padding:10px}
 .fin{position:absolute;bottom:12px;width:12px;height:25px;background:#b22}
 .left{left:-10px}.right{right:-10px}
 .glow{position:absolute;bottom:0;left:35%;width:30%;height:45%;background:#ff4d00;filter:blur(50px);opacity:.7}
-.flash{position:absolute;inset:0;background:white;opacity:0;z-index:5;pointer-events:none;display:none}
-.cloud{display:none;position:absolute;inset:0;z-index:4;overflow:hidden;background:radial-gradient(ellipse at 50% 76%,#b67b4b55 0%,#29201f88 28%,#08090dcc 76%)}
-.cloud:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#02040a44 0%,transparent 35%,#120d0bcc 100%);animation:atmosphereDarken 5s ease-out forwards;pointer-events:none}
-.topCloud{position:absolute;top:20%;left:50%;width:min(72vw,560px);height:min(40vh,310px);border-radius:48% 52% 45% 44%;transform:translateX(-50%) scale(0);background:radial-gradient(ellipse at 20% 55%,#b9b7ae 0%,#85857e 17%,transparent 38%),radial-gradient(ellipse at 38% 25%,#d2d0c6 0%,#9c9b91 23%,transparent 43%),radial-gradient(ellipse at 72% 32%,#c6c4ba 0%,#85857d 24%,transparent 46%),radial-gradient(ellipse at 84% 58%,#a5a49a 0%,#696a63 24%,transparent 45%),radial-gradient(ellipse at 52% 74%,#292b29 0%,#565850 34%,transparent 64%),radial-gradient(ellipse at 50% 44%,#aaa99f 0%,#77776f 48%,#3d3f39 78%,#242620 100%);
-box-shadow:inset -22px -28px 38px #11140f99,inset 10px 8px 25px #e2dfd455,0 0 40px #8d756044;filter:blur(3px)}
+.flash{position:absolute;inset:0;background:white;opacity:0;z-index:5;pointer-events:none}
+.cloud{display:none;position:absolute;inset:0;z-index:4;overflow:hidden;background:radial-gradient(ellipse at 50% 74%,#8e594155 0%,#211b1c66 35%,#08090dbb 76%);animation:appear 2s forwards}
+.cloud:before{content:"";position:absolute;left:50%;bottom:2%;width:min(90vw,900px);height:38vh;transform:translateX(-50%);background:radial-gradient(ellipse,#d17b4b55 0%,#8b483a33 34%,transparent 72%);filter:blur(24px);animation:groundGlow 4s ease-in-out infinite alternate}
+.topCloud{position:absolute;top:20%;left:50%;width:min(72vw,560px);height:min(40vh,310px);border-radius:48% 52% 45% 44%;transform:translateX(-50%) scale(0);background:radial-gradient(ellipse at 20% 55%,#b9b7ae 0%,#85857e 17%,transparent 38%),radial-gradient(ellipse at 38% 25%,#d2d0c6 0%,#9c9b91 23%,transparent 43%),radial-gradient(ellipse at 72% 32%,#c6c4ba 0%,#85857d 24%,transparent 46%),radial-gradient(ellipse at 84% 58%,#a5a49a 0%,#696a63 24%,transparent 45%),radial-gradient(ellipse at 52% 74%,#292b29 0%,#565850 34%,transparent 64%),radial-gradient(ellipse at 50% 44%,#aaa99f 0%,#77776f 48%,#3d3f39 78%,#242620 100%);box-shadow:inset -22px -28px 38px #11140f99,inset 10px 8px 25px #e2dfd455,0 0 40px #8d756044;filter:blur(4px);animation:expand 3.5s .2s cubic-bezier(.18,.65,.3,1) forwards,capDrift 7s 3.7s ease-in-out infinite alternate}
 .topCloud:before,.topCloud:after{content:"";position:absolute;border-radius:50%;background:radial-gradient(ellipse at 35% 25%,#d1cfc5 0%,#aaa99f 21%,#77776e 48%,#464740 69%,transparent 81%);filter:blur(4px)}
-.topCloud:before{left:-4%;top:24%;width:43%;height:63%;transform:rotate(-14deg)}
-.topCloud:after{right:-4%;top:8%;width:45%;height:69%;transform:rotate(13deg)}
-.stem{position:absolute;top:39%;left:50%;width:min(22vw,165px);height:52vh;transform:translateX(-50%) scaleY(0);transform-origin:top;background:radial-gradient(ellipse at 35% 20%,#c1bfb4 0%,#8d8c82 20%,transparent 46%),radial-gradient(ellipse at 67% 46%,#77776e 0%,#41433d 45%,transparent 72%),linear-gradient(90deg,#272923 0%,#74756b 27%,#aaa99d 48%,#62635a 72%,#292b25 100%);filter:blur(7px);border-radius:42% 48% 18% 18%}
-.stem:before,.stem:after{content:"";position:absolute;left:-26%;width:150%;height:24%;border-radius:50%;background:radial-gradient(ellipse at 36% 30%,#c0beb3 0%,#8b8a80 31%,#53554c 62%,transparent 80%);filter:blur(6px)}
-.stem:before{top:12%}.stem:after{top:40%;left:-10%;width:125%}
-.fireball{position:absolute;left:50%;top:68%;width:10vmin;height:10vmin;transform:translate(-50%,-50%) scale(.05);border-radius:50%;opacity:0;background:radial-gradient(circle,#fff 0%,#fff8cf 12%,#ffd36a 28%,#ff7029 48%,#b51f16 67%,transparent 75%);filter:blur(2px);z-index:3;display:none}
-.shockwave{position:absolute;left:50%;top:73%;width:12vmin;height:5vmin;transform:translate(-50%,-50%) scale(.1);border:5px solid #ffe7b0;border-radius:50%;opacity:0;filter:blur(2px);z-index:3;display:none}
-.dustFront{position:absolute;left:50%;bottom:3%;width:8vw;height:18vh;transform:translateX(-50%) scaleX(.1);border-radius:50% 50% 0 0;background:radial-gradient(ellipse at 50% 100%,#b6a18b99 0%,#74675d77 35%,transparent 72%);filter:blur(12px);opacity:0;z-index:3;display:none}
-.heatHaze{position:absolute;inset:0;opacity:0;z-index:2;pointer-events:none;background:linear-gradient(0deg,#ff6a1730,transparent 48%);mix-blend-mode:screen;display:none}
-#failFinal{display:none;position:relative;margin:22px auto;max-width:700px;color:#68ffb1;font-size:clamp(20px,4vw,36px);font-weight:bold;text-shadow:0 0 18px #68ffb1}
-#restartFail{display:none;position:relative;background:#260707;border-color:red;font-weight:bold;margin:10px}
+.topCloud:before{left:-4%;top:24%;width:43%;height:63%;transform:rotate(-14deg);box-shadow:-18px 14px 25px #393a3455}
+.topCloud:after{right:-4%;top:8%;width:45%;height:69%;transform:rotate(13deg);box-shadow:15px 18px 25px #393a3455}
+.stem{position:absolute;top:39%;left:50%;width:min(22vw,165px);height:52vh;transform:translateX(-50%) scaleY(0);transform-origin:top;background:radial-gradient(ellipse at 35% 20%,#c1bfb4 0%,#8d8c82 20%,transparent 46%),radial-gradient(ellipse at 67% 46%,#77776e 0%,#41433d 45%,transparent 72%),linear-gradient(90deg,#272923 0%,#74756b 27%,#aaa99d 48%,#62635a 72%,#292b25 100%);filter:blur(9px);border-radius:42% 48% 18% 18%;animation:stem 3s .4s ease-out forwards}
+.stem:before,.stem:after{content:"";position:absolute;left:-26%;width:150%;height:24%;border-radius:50%;background:radial-gradient(ellipse at 36% 30%,#c0beb3 0%,#8b8a80 31%,#53554c 62%,transparent 80%);filter:blur(6px);animation:smokeRoll 5s ease-in-out infinite alternate}
+.stem:before{top:12%}.stem:after{top:40%;left:-10%;width:125%;animation-delay:-2s}
+.fireball{position:absolute;left:50%;top:68%;width:10vmin;height:10vmin;transform:translate(-50%,-50%) scale(.05);border-radius:50%;opacity:0;background:radial-gradient(circle,#fff 0%,#fff8cf 12%,#ffd36a 28%,#ff7029 48%,#b51f16 67%,transparent 75%);filter:blur(2px);z-index:3}
+.shockwave{position:absolute;left:50%;top:73%;width:12vmin;height:5vmin;transform:translate(-50%,-50%) scale(.1);border:5px solid #ffe7b0;border-radius:50%;opacity:0;filter:blur(2px);z-index:3}
+.dustFront{position:absolute;left:50%;bottom:3%;width:8vw;height:18vh;transform:translateX(-50%) scaleX(.1);border-radius:50% 50% 0 0;background:radial-gradient(ellipse at 50% 100%,#b6a18b99 0%,#74675d77 35%,transparent 72%);filter:blur(12px);opacity:0;z-index:3}
+.heatHaze{position:absolute;inset:0;opacity:0;z-index:2;pointer-events:none;background:linear-gradient(0deg,#ff6a1730,transparent 48%);mix-blend-mode:screen}
+.cloud{background:radial-gradient(ellipse at 50% 76%,#b67b4b55 0%,#29201f88 28%,#08090dcc 76%);}
+.cloud:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#02040a44 0%,transparent 35%,#120d0bcc 100%);animation:atmosphereDarken 5s ease-out forwards;pointer-events:none}
+.topCloud{filter:blur(3px) contrast(1.08);}
+.stem{filter:blur(7px) contrast(1.1);}
+#failFinal{display:none;position:absolute;top:76%;width:100%;z-index:8;color:white;font-size:clamp(20px,4vw,36px);font-weight:bold;text-shadow:0 0 15px red}
+#restartFail{display:none;position:absolute;z-index:9;bottom:4%;left:50%;transform:translateX(-50%);background:#260707;border-color:red;font-weight:bold}
 #win{display:none;position:fixed;inset:0;z-index:15;background:#06120c;align-items:center;justify-content:center;text-align:center;padding:22px}
 #win.show{display:flex}
 .winbox{max-width:620px;padding:30px;border:1px solid #327653;background:#0d2117;border-radius:8px}
@@ -75,25 +78,35 @@ box-shadow:inset -22px -28px 38px #11140f99,inset 10px 8px 25px #e2dfd455,0 0 40
 @keyframes shake{25%{transform:translate(2px,-1px)}50%{transform:translate(-2px,1px)}75%{transform:translate(1px,2px)}}
 @keyframes fly{0%,15%{transform:translateY(0)}100%{transform:translateY(-120vh)}}
 @keyframes flick{to{transform:scaleY(1.5);filter:brightness(1.8)}}
-@keyframes atmosphereDarken{from{opacity:0}to{opacity:1}}
+@keyframes appear{0%{opacity:0}12%,100%{opacity:1}}
+@keyframes expand{0%{transform:translateX(-50%) scale(.12);opacity:.1}20%{opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
+@keyframes stem{0%{transform:translateX(-50%) scaleY(0);opacity:.3}100%{transform:translateX(-50%) scaleY(1);opacity:1}}
+@keyframes capDrift{from{transform:translateX(-50%) scale(1) rotate(-1deg)}to{transform:translateX(-50%) scale(1.05) rotate(1deg)}}
+@keyframes smokeRoll{from{scale:.92;translate:-3px 3px}to{scale:1.08;translate:3px -3px}}
+@keyframes groundGlow{from{opacity:.45}to{opacity:1}}
 @keyframes fireballBloom{0%{opacity:0;transform:translate(-50%,-50%) scale(.05)}8%{opacity:1}35%{opacity:.95;transform:translate(-50%,-50%) scale(5.5)}100%{opacity:.1;transform:translate(-50%,-50%) scale(8)}}
 @keyframes shockwaveRun{0%{opacity:0;transform:translate(-50%,-50%) scale(.1)}12%{opacity:.95}100%{opacity:0;transform:translate(-50%,-50%) scale(28,15)}}
 @keyframes dustSweep{0%{opacity:0;transform:translateX(-50%) scaleX(.1)}20%{opacity:.9}100%{opacity:.15;transform:translateX(-50%) scaleX(22)}}
-@media(max-width:740px){main{grid-template-columns:1fr;padding:10px}.timer{font-size:46px}}
+@keyframes heatRipple{0%{opacity:0}20%{opacity:.8}100%{opacity:.12}}
+@keyframes atmosphereDarken{from{opacity:0}to{opacity:1}}
+@media(max-width:740px){main{grid-template-columns:1fr;padding:10px}}
+#fail{padding:7vh 18px;background:radial-gradient(circle at center,#241020 0%,#07070d 72%)}
+#failFinal{position:relative;top:auto;margin:22px auto;max-width:700px;color:#68ffb1;text-shadow:0 0 18px #68ffb1}
+#failNum{color:#ff5c9d;text-shadow:0 0 24px #ff2f8a}
 </style>
 </head>
 <body>
 <header>
   <div>
-    <div class="brand">BLACKSITE // NUCLEAR DEFENSE</div>
-    <div class="muted">FICTIONAL THRILLER • OFFLINE TRAINING SIMULATION</div>
+    <div class="brand">BLACKSITE // NUCLEAR LAUNCH DEFENSE</div>
+    <div class="muted">NUCLEAR DEFENSE THRILLER • OFFLINE SIMULATION</div>
   </div>
-  <div id="topStatus" style="color:#ffc15c">● ALERT ACTIVE</div>
+  <div id="topStatus" style="color:#ffc15c">● LAUNCH ALERT ACTIVE</div>
 </header>
 
 <main>
 <section class="panel">
-<h2>01 / EMERGENCY CONTROL</h2>
+<h2>01 / NUCLEAR LAUNCH DEFENSE</h2>
 <div class="muted">TIME UNTIL SIMULATED LAUNCH</div>
 <div class="timer" id="timer">01:00</div>
 <div class="track"><span id="timebar"></span></div>
@@ -105,7 +118,7 @@ box-shadow:inset -22px -28px 38px #11140f99,inset 10px 8px 25px #e2dfd455,0 0 40
 </div>
 <div class="stats" style="margin-top:8px">
   <div class="stat"><small>SCORE</small><strong id="score">0000</strong></div>
-  <div class="stat"><small>COMBO</small><strong id="combo">x0</strong></div>
+  <div class="stat"><small>PUZZLE COMBO</small><strong id="combo">x0</strong></div>
   <div class="stat"><small>HINTS</small><strong>−100 PTS</strong></div>
 </div>
 
@@ -115,7 +128,7 @@ box-shadow:inset -22px -28px 38px #11140f99,inset 10px 8px 25px #e2dfd455,0 0 40
   <button onclick="action('trace')">[2] TRACE SIGNAL</button>
   <button onclick="action('isolate')">[3] ISOLATE NETWORK</button>
   <button onclick="action('verify')">[4] VERIFY AUTHORIZATION</button>
-  <button class="danger" id="abort" onclick="abortLaunch()" disabled>[5] ABORT LAUNCH</button>
+  <button class="danger" id="abort" onclick="abortLaunch()" disabled>[5] ABORT NUCLEAR LAUNCH</button>
   <button id="pause" onclick="pauseTimer()">PAUSE TIMER</button>
 </div>
 
@@ -131,34 +144,34 @@ box-shadow:inset -22px -28px 38px #11140f99,inset 10px 8px 25px #e2dfd455,0 0 40
 <aside>
 <div class="panel">
 <h2>02 / MISSION OBJECTIVES</h2>
-<div class="objective" id="o0">○ Scan the launch telemetry.</div>
-<div class="objective" id="o1">○ Trace the suspicious signal.</div>
-<div class="objective" id="o2">○ Isolate the affected network.</div>
-<div class="objective" id="o3">○ Verify authorization.</div>
-<div class="objective" id="o4">○ Abort the simulated launch.</div>
+<div class="objective" id="o0">○ Decode the launch access keypad.</div>
+<div class="objective" id="o1">○ Route power through the safety grid.</div>
+<div class="objective" id="o2">○ Stabilize the launch-control network.</div>
+<div class="objective" id="o3">○ Verify launch authorization.</div>
+<div class="objective" id="o4">○ Abort the simulated nuclear launch.</div>
 </div>
 
 <div class="panel">
 <h2>03 / OPERATIONS LOG</h2>
 <div class="log" id="log">
-<p class="ok">[SYSTEM] Defense console initialized.</p>
-<p>[SYSTEM] Fictional simulation. No real systems are connected.</p>
-<p class="warn">[ALERT] Simulated launch sequence detected.</p>
+<p class="ok">[SYSTEM] Secure console initialized.</p>
+<p>[SYSTEM] Training simulation only. No real systems are connected.</p>
+<p class="warn">[ALERT] Unauthorized nuclear launch sequence detected.</p>
 </div>
 </div>
 
 <div class="panel">
 <h2>CONTROL NOTES</h2>
-<div class="muted" style="line-height:1.8">Solve ten puzzles and complete four defense actions before the countdown ends. Wrong answers cost time. If time runs out or four attempts fail, the fictional launch animation plays.</div>
+<div class="muted" style="line-height:1.8">The mission starts immediately. Solve ten puzzles, complete the defense actions, and abort the simulated nuclear launch before the countdown ends. Wrong answers cost time. If time runs out or four attempts fail, the launch animation begins.</div>
 </div>
 </aside>
 </main>
 
-<footer>BLACKSITE • FICTIONAL NUCLEAR-DEFENSE PUZZLE GAME • OFFLINE</footer>
+<footer>BLACKSITE NUCLEAR DEFENSE • FICTIONAL PUZZLE GAME • NO NETWORK CONNECTION</footer>
 
 <div id="fail">
   <div class="warning">⚠ NUCLEAR LAUNCH SEQUENCE ⚠</div>
-  <div id="failMsg">LAUNCH DETECTED — SIMULATION ACTIVE</div>
+  <div id="failMsg">LAUNCH DETECTED — SIMULATED IMPACT IMMINENT</div>
   <div id="failNum">5</div>
   <div class="scene" id="scene">
     <div class="glow"></div>
@@ -175,14 +188,14 @@ box-shadow:inset -22px -28px 38px #11140f99,inset 10px 8px 25px #e2dfd455,0 0 40
   <div class="shockwave" id="shockwave"></div>
   <div class="dustFront" id="dustFront"></div>
   <div class="cloud" id="cloud"><div class="topCloud"></div><div class="stem"></div></div>
-  <div id="failFinal">SIMULATION FAILURE — BLACKSITE LOST</div>
+  <div id="failFinal">SIMULATED NUCLEAR IMPACT — BLACKSITE LOST</div>
   <button id="restartFail" onclick="location.reload()">TRY AGAIN</button>
 </div>
 
 <div id="win">
   <div class="winbox">
     <h1>LAUNCH SEQUENCE ABORTED!</h1>
-    <p>You solved the puzzles, verified authorization, and stopped the fictional launch. BLACKSITE is secure.</p>
+    <p>You solved the puzzles, verified authorization, and aborted the simulated nuclear launch. BLACKSITE is secure.</p>
     <button onclick="location.reload()">PLAY AGAIN</button>
   </div>
 </div>
@@ -194,8 +207,8 @@ const done={scan:false,trace:false,isolate:false,verify:false};
 const $=id=>document.getElementById(id);
 
 const qs=[
-{type:'order',title:'🔢 LEVEL 1 — NUMBER LOCK',text:'Tap the numbers from LOWEST to HIGHEST to enter the safety code.',numbers:[7,2,9,1,5],order:[1,2,5,7,9],hint:'Start with the smallest number, then work upward.',success:'NUMBER LOCK OPEN — first interlock disabled.'},
-{type:'colors',title:'🎨 LEVEL 2 — COLOR MATRIX',text:'Tap tiles to cycle their colors. Make all 9 tiles the TARGET COLOR to stabilize the matrix.',colors:['#36d6e7','#ff5b70','#f6c945'],names:['CYAN','RED','GOLD'],start:[1,0,2,1,2,0,2,1,0],hint:'Each tile cycles red → gold → cyan → red. Match every tile to CYAN.',success:'MATRIX STABLE — all nine tiles match.'},
+{type:'keypad',title:'🔐 LEVEL 1 — ACCESS KEYPAD',text:'The console gives three clues. Work out the 3-digit code, then enter it using the keypad. Clues: first digit = 2 + 3; second digit = 9 − 6; third digit = 2 × 4.',code:'538',hint:'Calculate each digit separately: 2+3, 9−6, then 2×4.',success:'🔐 ACCESS CODE ACCEPTED — first interlock unlocked.'},
+{type:'route',title:'🧭 LEVEL 2 — CIRCUIT ROUTING',text:'Guide power from START to EXIT. Move one square at a time, only up, down, left, or right. Avoid the damaged red circuits.',blocked:[1,5],hint:'Try START → bottom-left → center → bottom-middle → EXIT.',success:'🧭 POWER ROUTED — circuit grid stabilized.'},
 {title:'🧠 LEVEL 3 — SEQUENCE',text:'The pattern is 4, 8, 16, 32, __. What comes next?',opts:['48','64','96'],correct:1,hint:'Each number doubles.',success:'Sequence lock solved.'},
 {title:'🔎 LEVEL 4 — DECODE',text:'The code is shifted one letter backward. Decode DBU by moving each letter back one step.',opts:['CAT','DOG','COW'],correct:0,hint:'D→C, B→A, U→T.',success:'Message decoded. Interlock disabled.'},
 {title:'🧩 LEVEL 5 — LOGIC GRID',text:'Only one switch is safe. A says “B is safe.” B says “I am not safe.” C says “A is not safe.” Exactly one statement is true. Which switch is safe?',opts:['A','B','C'],correct:0,hint:'If A is safe, the first statement is false, the second is true, and the third is false: exactly one true statement.',success:'Logic grid solved.'},
@@ -203,7 +216,7 @@ const qs=[
 {title:'📐 LEVEL 7 — CLOCK ANGLE',text:'At 3:15, what is the smaller angle between the hands of an analog clock?',opts:['0°','7.5°','90°'],correct:1,hint:'The minute hand is at 90°. The hour hand is at 97.5°.',success:'Clock puzzle solved.'},
 {title:'🔢 LEVEL 8 — ODD ONE OUT',text:'Which number does not belong: 9, 16, 25, 36, 49, 54?',opts:['25','49','54'],correct:2,hint:'The others are perfect squares: 3², 4², 5², 6², 7².',success:'Pattern identified.'},
 {title:'🛰️ LEVEL 9 — SIGNAL TRACE',text:'A signal repeats: NORTH, EAST, SOUTH, WEST, NORTH, EAST, __. What comes next?',opts:['NORTH','SOUTH','WEST'],correct:1,hint:'It cycles through the four compass directions.',success:'Signal traced.'},
-{title:'🛡️ LEVEL 10 — FINAL SAFETY CHECK',text:'The console shows an unsigned override request while the safety indicator is red. What is the correct action?',opts:['Accept the override immediately','Verify authorization and use the approved abort control','Ignore all warnings'],correct:1,hint:'Do not trust an unverified override. Verify it and use the safety control.',success:'FINAL CHECK PASSED — launch sequence can be aborted.'}
+{title:'🛡️ LEVEL 10 — FINAL SAFETY CHECK',text:'The console shows an unsigned override request while the safety indicator is red. What is the correct action?',opts:['Accept the override immediately','Verify authorization and use the approved abort control','Ignore all warnings'],correct:1,hint:'Do not trust an unverified override. Verify it and use the safety control.',success:'🏆 FINAL CHECK PASSED — launch sequence safely aborted.'}
 ];
 
 function log(s,c=''){
@@ -222,7 +235,7 @@ function tick(){
   if(ended||paused)return;
   time--;
   drawTimer();
-  if(time<=0)fail('The countdown reached zero.');
+  if(time<=0)fail('The launch countdown reached zero.');
 }
 
 function pauseTimer(){
@@ -234,10 +247,14 @@ function pauseTimer(){
 
 let orderProgress=0;
 let tileColors=[];
+let keypadEntry='';
+let routePath=[0];
+let routeBlocked=[1,5];
 
 function render(){
   $('hintText').textContent='';
   $('hintButton').disabled=false;
+
   if(stage>=qs.length){
     $('qtitle').textContent='ALL 10 PUZZLES COMPLETE';
     $('question').textContent='All puzzles solved! Complete the four defense actions, then abort the launch sequence.';
@@ -251,63 +268,86 @@ function render(){
   $('question').textContent=q.text;
   $('choices').innerHTML='';
 
-  if(q.type==='order'){
-    orderProgress=0;
-    q.numbers.forEach(n=>{
-      const b=document.createElement('button');
-      b.textContent=n;
-      b.style.margin='5px';
-      b.onclick=()=>{
-        if(ended||paused)return;
-        if(n===q.order[orderProgress]){
-          b.disabled=true;
-          b.style.borderColor='#68ffb1';
-          b.style.color='#68ffb1';
-          orderProgress++;
-          log('Number '+n+' accepted.','ok');
-          if(orderProgress===q.order.length)solveCurrent();
-        }else{
-          wrong++;
-          combo=0;
-          $('combo').textContent='x0';
-          time=Math.max(0,time-8);
-          drawTimer();
-          log('Wrong order. 8 seconds lost.','bad');
-          if(time<=0)fail('The countdown reached zero.');
-          else if(wrong>=4)fail('Four failed attempts. The simulated launch sequence completed.');
-        }
-      };
-      $('choices').appendChild(b);
-    });
-  }else if(q.type==='colors'){
-    tileColors=q.start.slice();
-    const target=document.createElement('div');
-    target.textContent='TARGET: CYAN';
-    target.style='font-weight:bold;color:#36d6e7;margin:8px 0';
-    $('choices').appendChild(target);
+  if(q.type==='keypad'){
+    keypadEntry='';
+    const display=document.createElement('div');
+    display.id='keypadDisplay';
+    display.textContent='CODE: ___';
+    display.style='font-size:20px;letter-spacing:5px;color:#68ffb1;background:#05090d;border:1px solid #29404e;padding:12px;margin:8px 0;text-align:center';
+    $('choices').appendChild(display);
 
     const grid=document.createElement('div');
-    grid.style='display:grid;grid-template-columns:repeat(3,minmax(55px,85px));gap:8px;justify-content:start;margin:12px 0';
+    grid.style='display:grid;grid-template-columns:repeat(3,minmax(55px,75px));gap:7px;justify-content:start';
 
-    tileColors.forEach((c,i)=>{
+    for(let n=1;n<=9;n++){
       const b=document.createElement('button');
-      b.setAttribute('aria-label','Color tile '+(i+1));
-      b.style='height:65px;padding:0;border:2px solid #dcebf3;background:'+q.colors[c]+';color:#071019;font-weight:bold;font-size:10px';
-      b.textContent=q.names[c];
-      b.onclick=()=>{
-        if(ended||paused)return;
-        tileColors[i]=(tileColors[i]+1)%3;
-        b.style.background=q.colors[tileColors[i]];
-        b.textContent=q.names[tileColors[i]];
-        if(tileColors.every(v=>v===0))solveCurrent();
-      };
+      b.textContent=n;
+      b.style='font-size:17px';
+      b.onclick=()=>pressDigit(String(n));
       grid.appendChild(b);
-    });
+    }
+
+    const clear=document.createElement('button');
+    clear.textContent='CLEAR';
+    clear.onclick=()=>{
+      keypadEntry='';
+      display.textContent='CODE: ___';
+    };
+    grid.appendChild(clear);
+
+    const zero=document.createElement('button');
+    zero.textContent='0';
+    zero.onclick=()=>pressDigit('0');
+    grid.appendChild(zero);
+
+    const enter=document.createElement('button');
+    enter.textContent='ENTER';
+    enter.onclick=checkKeypad;
+    grid.appendChild(enter);
+
     $('choices').appendChild(grid);
-    const note=document.createElement('div');
-    note.className='muted';
-    note.textContent='Click a tile to cycle its color.';
-    $('choices').appendChild(note);
+  }else if(q.type==='route'){
+    routePath=[0];
+
+    const legend=document.createElement('div');
+    legend.className='muted';
+    legend.textContent='GREEN = current route • RED = damaged circuit • Click adjacent squares to move.';
+    $('choices').appendChild(legend);
+
+    const grid=document.createElement('div');
+    grid.style='display:grid;grid-template-columns:repeat(3,minmax(65px,85px));gap:7px;margin:12px 0';
+
+    for(let i=0;i<9;i++){
+      const b=document.createElement('button');
+      b.dataset.cell=String(i);
+      b.style='height:62px;padding:4px;font-weight:bold';
+      b.textContent=i===0?'START':i===8?'EXIT':q.blocked.includes(i)?'DAMAGED':'□';
+
+      if(q.blocked.includes(i)){
+        b.style.background='#5a2029';
+        b.style.borderColor='#ff5b70';
+        b.disabled=true;
+      }
+
+      if(i===0||i===8){
+        b.style.borderColor='#68ffb1';
+        b.style.color='#68ffb1';
+      }
+
+      b.onclick=()=>moveRoute(i);
+      grid.appendChild(b);
+    }
+
+    $('choices').appendChild(grid);
+
+    const reset=document.createElement('button');
+    reset.textContent='RESET ROUTE';
+    reset.onclick=()=>{
+      routePath=[0];
+      updateRouteGrid();
+    };
+    $('choices').appendChild(reset);
+    updateRouteGrid();
   }else{
     q.opts.forEach((v,i)=>{
       const b=document.createElement('button');
@@ -319,15 +359,113 @@ function render(){
   }
 }
 
+function pressDigit(digit){
+  if(ended||paused)return;
+  if(keypadEntry.length>=3)return;
+
+  keypadEntry+=digit;
+  const display=$('keypadDisplay');
+
+  if(display){
+    display.textContent='CODE: '+keypadEntry.padEnd(3,'_');
+  }
+}
+
+function checkKeypad(){
+  if(ended||paused||stage!==0)return;
+
+  if(keypadEntry===qs[stage].code){
+    solveCurrent();
+    return;
+  }
+
+  wrong++;
+  combo=0;
+  $('combo').textContent='x0';
+  time=Math.max(0,time-8);
+  drawTimer();
+  log('Incorrect access code. 8 seconds lost.','bad');
+
+  keypadEntry='';
+  const display=$('keypadDisplay');
+  if(display)display.textContent='CODE: ___';
+
+  if(time<=0){
+    fail('The launch countdown reached zero.');
+  }else if(wrong>=4){
+    fail('Four failed attempts. The simulated launch sequence completed.');
+  }
+}
+
+function updateRouteGrid(){
+  document.querySelectorAll('[data-cell]').forEach(b=>{
+    const i=Number(b.dataset.cell);
+    const q=qs[stage];
+
+    if(!q||q.type!=='route')return;
+
+    if(routePath.includes(i)){
+      b.style.background='#14513a';
+      b.style.borderColor='#68ffb1';
+      b.style.color='#baffd5';
+      b.textContent=i===0?'START':i===8?'EXIT':'✓';
+    }else if(q.blocked.includes(i)){
+      b.style.background='#5a2029';
+      b.style.borderColor='#ff5b70';
+      b.style.color='#fff';
+      b.textContent='DAMAGED';
+    }else{
+      b.style.background='#142b39';
+      b.style.borderColor='#35566a';
+      b.style.color='#e4f8ff';
+      b.textContent=i===8?'EXIT':'□';
+    }
+  });
+}
+
+function moveRoute(i){
+  if(ended||paused||stage!==1)return;
+
+  const q=qs[stage];
+  if(q.blocked.includes(i))return;
+
+  const last=routePath[routePath.length-1];
+
+  if(i===last&&routePath.length>1){
+    routePath.pop();
+    updateRouteGrid();
+    return;
+  }
+
+  if(routePath.includes(i))return;
+
+  const adjacent=
+    Math.abs(Math.floor(i/3)-Math.floor(last/3))+
+    Math.abs((i%3)-(last%3))===1;
+
+  if(!adjacent){
+    log('Choose a square directly next to your current position.','warn');
+    return;
+  }
+
+  routePath.push(i);
+  updateRouteGrid();
+
+  if(i===8)solveCurrent();
+}
+
 function solveCurrent(){
   if(ended||paused||stage>=qs.length)return;
+
   const solvedIndex=stage;
   stage++;
   combo++;
   score+=100+(combo-1)*25;
+
   $('score').textContent=String(score).padStart(4,'0');
   $('combo').textContent='x'+combo;
   $('integrity').textContent=Math.min(99,42+Math.floor(stage*5.5))+'%';
+
   log(qs[solvedIndex].success||('Puzzle '+stage+' solved.'),'ok');
   render();
   checkAbort();
@@ -335,6 +473,7 @@ function solveCurrent(){
 
 function answer(i){
   if(ended||paused||stage>=qs.length)return;
+
   if(i!==qs[stage].correct){
     wrong++;
     combo=0;
@@ -342,15 +481,21 @@ function answer(i){
     time=Math.max(0,time-8);
     drawTimer();
     log('Incorrect. 8 seconds lost. Try again.','bad');
-    if(time<=0)fail('The countdown reached zero.');
-    else if(wrong>=4)fail('Four failed attempts. The simulated launch sequence completed.');
+
+    if(time<=0){
+      fail('The launch countdown reached zero.');
+    }else if(wrong>=4){
+      fail('Four failed attempts. The launch sequence completed.');
+    }
     return;
   }
+
   solveCurrent();
 }
 
 function showHint(){
   if(ended||paused||stage>=qs.length)return;
+
   $('hintText').textContent='HINT: '+qs[stage].hint;
   score=Math.max(0,score-100);
   $('score').textContent=String(score).padStart(4,'0');
@@ -359,49 +504,62 @@ function showHint(){
 
 function action(key){
   if(ended||paused)return;
+
   if(done[key]){
     log(key.toUpperCase()+' already completed.','warn');
     return;
   }
+
   const needed={scan:1,trace:2,isolate:3,verify:4}[key];
+
   if(stage<needed){
-    log('Complete the matching checkpoint before this action.','bad');
+    log('Complete the matching defense checkpoint before this action.','bad');
     return;
   }
+
   done[key]=true;
+
   const objective={scan:0,trace:1,isolate:2,verify:3}[key];
+
   const labels=[
-    'Scan the launch telemetry.',
-    'Trace the suspicious signal.',
-    'Isolate the affected network.',
-    'Verify authorization.'
+    'Scan telemetry for the first clue.',
+    'Trace the launch-control signal.',
+    'Stabilize the launch-control network.',
+    'Verify launch authorization.'
   ];
+
   $('o'+objective).textContent='✓ '+labels[objective];
 
   if(key==='scan')$('threat').textContent='IDENTIFIED';
   if(key==='isolate')$('threat').textContent='CONTAINED';
+
   if(key==='verify'){
     $('auth').textContent='VERIFIED';
     $('auth').style.color='#68ffb1';
   }
+
   log(key.toUpperCase()+' defense action confirmed.','ok');
   checkAbort();
 }
 
 function checkAbort(){
   $('abort').disabled=!(stage===qs.length&&Object.values(done).every(Boolean));
-  if(stage===qs.length)$('qtitle').textContent='🏁 ALL PUZZLES SOLVED';
+
+  if(stage===qs.length){
+    $('qtitle').textContent='🏁 ALL PUZZLES SOLVED';
+  }
 }
 
 function abortLaunch(){
   if(ended)return;
+
   if(stage===qs.length&&Object.values(done).every(Boolean)){
     ended=true;
     clearInterval(interval);
     $('win').classList.add('show');
     $('topStatus').textContent='● LAUNCH SEQUENCE ABORTED';
-    $('o4').textContent='✓ Simulated launch aborted.';
-    log('Fictional launch sequence aborted. Mission successful.','ok');
+    $('o4').textContent='✓ Simulated nuclear launch aborted.';
+    log('Simulated nuclear launch sequence aborted. Mission successful.','ok');
   }else{
     log('Not yet! Solve all puzzles and complete the defense actions first.','bad');
   }
@@ -409,51 +567,71 @@ function abortLaunch(){
 
 function fail(reason){
   if(ended)return;
+
   ended=true;
   paused=true;
   clearInterval(interval);
+
   log('MISSION FAILURE: '+reason,'bad');
   $('topStatus').textContent='● DEFENSE FAILURE';
   $('fail').classList.add('active');
 
   let n=5;
   $('failNum').textContent=n;
+
   const countdown=setInterval(()=>{
     n--;
     $('failNum').textContent=n;
+
     if(n<=0){
       clearInterval(countdown);
       $('failNum').textContent='IMPACT';
       $('failMsg').textContent='SIMULATED NUCLEAR DETONATION';
       $('failFinal').textContent='BLACKSITE HAS FALLEN — RESTART THE SIMULATION';
       $('failFinal').style.display='block';
-      ['flash','heatHaze','fireball','shockwave','dustFront','cloud'].forEach(id=>$(id).style.display='block');
-      $('flash').classList.add('flashOn');
-      $('heatHaze').style.animation='screenFlash 3s ease-out forwards';
-      $('fireball').style.animation='fireballBloom 4s ease-out forwards';
-      $('shockwave').style.animation='shockwaveRun 3s ease-out forwards';
-      $('dustFront').style.animation='dustSweep 4s ease-out forwards';
-      $('cloud').style.display='block';
-      $('cloud').querySelector('.topCloud').style.animation='expand 3.5s .2s cubic-bezier(.18,.65,.3,1) forwards,capDrift 7s 3.7s ease-in-out infinite alternate';
-      $('cloud').querySelector('.stem').style.animation='stem 3s .4s ease-out forwards';
-      $('restartFail').style.display='inline-block';
+      $('restartFail').style.display='block';
+
+      // FIX: Safely show animation elements only when they exist.
+      [
+        'scene',
+        'flash',
+        'heatHaze',
+        'fireball',
+        'shockwave',
+        'dustFront',
+        'cloud'
+      ].forEach(id=>{
+        const element=document.getElementById(id);
+
+        if(element){
+          element.style.display='block';
+        }else{
+          console.warn('Launch animation element not found:',id);
+        }
+      });
+
+      const flash=$('flash');
+      const heatHaze=$('heatHaze');
+      const fireball=$('fireball');
+      const shockwave=$('shockwave');
+      const dustFront=$('dustFront');
+
+      if(flash)flash.classList.add('flashOn');
+      if(heatHaze)heatHaze.style.animation='heatRipple 3s ease-out forwards';
+      if(fireball)fireball.style.animation='fireballBloom 4s ease-out forwards';
+      if(shockwave)shockwave.style.animation='shockwaveRun 3s ease-out forwards';
+      if(dustFront)dustFront.style.animation='dustSweep 4s ease-out forwards';
+
+      $('fail').style.background='#030508';
     }
   },1000);
 }
 
-const style=document.createElement('style');
-style.textContent=`
-@keyframes expand{0%{transform:translateX(-50%) scale(.12);opacity:.1}20%{opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
-@keyframes stem{0%{transform:translateX(-50%) scaleY(0);opacity:.3}100%{transform:translateX(-50%) scaleY(1);opacity:1}}
-@keyframes capDrift{from{transform:translateX(-50%) scale(1) rotate(-1deg)}to{transform:translateX(-50%) scale(1.05) rotate(1deg)}}
-@keyframes smokeRoll{from{scale:.92;translate:-3px 3px}to{scale:1.08;translate:3px -3px}}
-`;
-document.head.appendChild(style);
-
 render();
 drawTimer();
 $('abort').disabled=true;
-log('Defense simulation started. 60 seconds to solve the puzzles and abort the fictional launch sequence.','warn');
+log('Nuclear defense simulation started. Solve the puzzles and abort the fictional launch sequence within 60 seconds.','warn');
+
 const interval=setInterval(tick,1000);
 </script>
 </body>
